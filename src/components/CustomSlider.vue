@@ -40,7 +40,7 @@ const progressPercentage = computed(() => {
 const gradientClass = computed(() => {
   switch (props.gradientType) {
     case 'temperature':
-      return 'bg-gradient-to-r from-blue-400 via-cyan-300 via-yellow-300 to-orange-400'
+      return 'bg-gradient-to-r from-orange-400 via-yellow-300 via-cyan-300 to-blue-400'
     case 'brightness':
       return 'bg-gradient-to-r from-gray-800 via-gray-600 to-gray-200'
     default:

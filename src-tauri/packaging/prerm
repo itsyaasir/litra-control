@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Pre-removal script for Litra Control
+# This script cleans up udev rules
+
+set -e
+
+UDEV_RULES_FILE="/etc/udev/rules.d/99-litra-control.rules"
+
+# Remove udev rules file
+if [ -f "$UDEV_RULES_FILE" ]; then
+    rm -f "$UDEV_RULES_FILE"
+    echo "Removed udev rules file"
+fi
+
+# Reload udev rules
+if command -v udevadm >/dev/null 2>&1; then
+    udevadm control --reload-rules
+    udevadm trigger
+fi
+
+# Update desktop database
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications
+fi
+
+echo "Litra Control has been removed."

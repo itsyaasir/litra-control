@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Litra Control
+Comment=Professional lighting control for Logitech Litra devices
+GenericName=Lighting Control
+Icon=litra-control
+Exec=litra-control
+Terminal=false
+Categories=AudioVideo;Video;Photography;Graphics;Utility;
+Keywords=litra;logitech;lighting;camera;streaming;video;
+MimeType=
+StartupNotify=true
+StartupWMClass=litra-control

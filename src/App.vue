@@ -294,8 +294,8 @@ onMounted(() => {
                   />
                 </div>
                 <div class="flex justify-between text-xs text-muted-foreground">
-                  <span>Cool</span>
                   <span>Warm</span>
+                  <span>Cool</span>
                 </div>
               </div>
             </div>

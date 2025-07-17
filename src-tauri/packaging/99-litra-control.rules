@@ -1,0 +1,14 @@
+# Logitech Litra device permissions
+# This file should be placed in /etc/udev/rules.d/
+
+# Logitech Litra Glow (USB)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c900", GROUP="plugdev", MODE="0660"
+
+# Logitech Litra Beam (USB)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c901", GROUP="plugdev", MODE="0660"
+
+# Logitech Litra Beam LX (USB)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="b901", GROUP="plugdev", MODE="0660"
+
+# Logitech Litra Beam (newer revision)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c903", GROUP="plugdev", MODE="0660"

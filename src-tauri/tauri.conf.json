@@ -35,6 +35,11 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "publisher": "Litra Control",
+    "copyright": "Copyright © 2025 Litra Control",
+    "category": "Utility",
+    "shortDescription": "Professional lighting control for Logitech Litra devices",
+    "longDescription": "Litra Control is a modern desktop application for controlling Logitech Litra lighting devices. Features include brightness and temperature adjustment, lighting presets, and automatic camera activation."
   }
 }
