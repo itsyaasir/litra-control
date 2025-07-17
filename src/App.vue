@@ -139,7 +139,9 @@ onMounted(() => {
               :model-value="selectedDevice?.serial_number || ''"
               @update:model-value="handleDeviceSelect"
             >
-              <SelectTrigger class="w-44 text-sm bg-muted/50 border-input/50 hover:bg-muted hover:border-input transition-colors">
+              <SelectTrigger
+                class="w-44 text-sm bg-muted/50 border-input/50 hover:bg-muted hover:border-input transition-colors"
+              >
                 <SelectValue placeholder="Select Device" />
               </SelectTrigger>
               <SelectContent class="bg-popover border-border">
@@ -158,7 +160,9 @@ onMounted(() => {
           <!-- Status -->
           <div class="flex items-center gap-2 text-sm">
             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span class="text-muted-foreground">{{ device.deviceStats.value.connected }} connected</span>
+            <span class="text-muted-foreground">{{
+              device.deviceStats.value.connected
+            }} connected</span>
           </div>
         </div>
 
@@ -185,9 +189,12 @@ onMounted(() => {
               @click="device.refreshDevices"
             >
               <RefreshCw
-                class="w-4 h-4" :class="[
-                  device.isRefreshing.value ? 'animate-spin' : '',
-                ]"
+                class="w-4 h-4"
+                :class="
+                  [
+                    device.isRefreshing.value ? 'animate-spin' : '',
+                  ]
+                "
               />
             </Button>
           </div>
@@ -199,7 +206,10 @@ onMounted(() => {
     <main class="flex-1 p-4 overflow-y-auto">
       <div class="max-w-7xl mx-auto space-y-4">
         <!-- Device Info Card -->
-        <div v-if="selectedDevice" class="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-border/50">
+        <div
+          v-if="selectedDevice"
+          class="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-border/50"
+        >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="p-1.5 bg-gradient-to-br from-primary to-primary/80 rounded-lg shadow-sm">
@@ -216,12 +226,22 @@ onMounted(() => {
             </div>
             <div class="flex items-center gap-4">
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_connected ? 'bg-emerald-500' : 'bg-red-500'" />
-                <span class="text-sm text-muted-foreground">{{ selectedDevice.is_connected ? 'Connected' : 'Disconnected' }}</span>
+                <div
+                  class="w-2 h-2 rounded-full"
+                  :class="selectedDevice.is_connected ? 'bg-emerald-500' : 'bg-red-500'"
+                />
+                <span class="text-sm text-muted-foreground">{{
+                  selectedDevice.is_connected ? 'Connected' : 'Disconnected'
+                }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_on ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'" />
-                <span class="text-sm font-medium">{{ selectedDevice.is_on ? 'ON' : 'OFF' }}</span>
+                <div
+                  class="w-2 h-2 rounded-full"
+                  :class="selectedDevice.is_on ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'"
+                />
+                <span class="text-sm font-medium">{{
+                  selectedDevice.is_on ? 'ON' : 'OFF'
+                }}</span>
               </div>
             </div>
           </div>
@@ -253,7 +273,10 @@ onMounted(() => {
                       <Video class="w-3 h-3 text-primary" />
                     </div>
                     <div>
-                      <label for="camera-activate" class="text-sm font-medium text-foreground cursor-pointer">
+                      <label
+                        for="camera-activate"
+                        class="text-sm font-medium text-foreground cursor-pointer"
+                      >
                         Auto-activate with camera
                       </label>
                       <p class="text-xs text-muted-foreground">
@@ -270,14 +293,19 @@ onMounted(() => {
             </div>
 
             <!-- Temperature Control -->
-            <div v-if="selectedDevice" class="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50">
+            <div
+              v-if="selectedDevice"
+              class="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50"
+            >
               <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
                 <Sun class="w-4 h-4 text-primary" />
                 Temperature
               </h3>
               <div class="space-y-3">
                 <div class="text-center">
-                  <span class="text-2xl font-bold text-primary">{{ selectedDevice.temperature_kelvin }}K</span>
+                  <span class="text-2xl font-bold text-primary">{{
+                    selectedDevice.temperature_kelvin
+                  }}K</span>
                   <p class="text-xs text-muted-foreground">
                     Color Temperature
                   </p>
@@ -301,14 +329,19 @@ onMounted(() => {
             </div>
 
             <!-- Brightness Control -->
-            <div v-if="selectedDevice" class="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50">
+            <div
+              v-if="selectedDevice"
+              class="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50"
+            >
               <h3 class="text-base font-semibold mb-3 flex items-center gap-2">
                 <Lightbulb class="w-4 h-4 text-primary" />
                 Brightness
               </h3>
               <div class="space-y-3">
                 <div class="text-center">
-                  <span class="text-2xl font-bold text-primary">{{ brightnessPercentage }}%</span>
+                  <span class="text-2xl font-bold text-primary">{{
+                    brightnessPercentage
+                  }}%</span>
                   <p class="text-xs text-muted-foreground">
                     Light Intensity
                   </p>
@@ -348,10 +381,17 @@ onMounted(() => {
                 </span>
               </div>
               <div class="text-base font-semibold">
-                {{ presets.currentPreset.value === 'manual' ? 'Manual Control' : presets.getPresetById(presets.currentPreset.value)?.name || 'Manual Control' }}
+                {{
+                  presets.currentPreset.value === 'manual' ? 'Manual Control' : presets.getPresetById(presets.currentPreset.value)?.name || 'Manual Control'
+                }}
               </div>
-              <div v-if="presets.currentPreset.value !== 'manual'" class="text-sm text-muted-foreground mt-1">
-                {{ presets.getPresetById(presets.currentPreset.value)?.description }}
+              <div
+                v-if="presets.currentPreset.value !== 'manual'"
+                class="text-sm text-muted-foreground mt-1"
+              >
+                {{
+                  presets.getPresetById(presets.currentPreset.value)?.description
+                }}
               </div>
             </div>
 
@@ -363,8 +403,14 @@ onMounted(() => {
                 :class="presets.currentPreset.value === 'manual' ? 'bg-primary/10 border-primary/30' : 'bg-muted/20 hover:bg-muted/30'"
                 @click="presets.setManualMode()"
               >
-                <Edit3 class="w-6 h-6" :class="presets.currentPreset.value === 'manual' ? 'text-primary' : 'text-muted-foreground'" />
-                <span class="text-sm font-medium text-center" :class="presets.currentPreset.value === 'manual' ? 'text-primary' : 'text-foreground'">
+                <Edit3
+                  class="w-6 h-6"
+                  :class="presets.currentPreset.value === 'manual' ? 'text-primary' : 'text-muted-foreground'"
+                />
+                <span
+                  class="text-sm font-medium text-center"
+                  :class="presets.currentPreset.value === 'manual' ? 'text-primary' : 'text-foreground'"
+                >
                   Manual
                 </span>
               </button>
@@ -378,12 +424,18 @@ onMounted(() => {
                 @click="presets.applyPreset(preset)"
               >
                 <div
-                  class="w-6 h-6 rounded-full border border-border/30" :style="{
-                    backgroundColor: getPresetColor(preset),
-                    boxShadow: `0 0 12px ${getPresetColor(preset)}40`,
-                  }"
+                  class="w-6 h-6 rounded-full border border-border/30"
+                  :style="
+                    {
+                      backgroundColor: getPresetColor(preset),
+                      boxShadow: `0 0 12px ${getPresetColor(preset)}40`,
+                    }
+                  "
                 />
-                <span class="text-sm font-medium text-center leading-tight" :class="presets.currentPreset.value === preset.id ? 'text-primary' : 'text-foreground'">
+                <span
+                  class="text-sm font-medium text-center leading-tight"
+                  :class="presets.currentPreset.value === preset.id ? 'text-primary' : 'text-foreground'"
+                >
                   {{ preset.name.split(' ')[0] }}
                 </span>
               </button>
@@ -420,7 +472,8 @@ onMounted(() => {
             No devices found
           </h3>
           <p class="text-sm mt-2 text-muted-foreground">
-            Make sure your Litra devices are connected via USB and try refreshing.
+            Make sure your Litra devices are connected via USB and try
+            refreshing.
           </p>
         </div>
         <Button
@@ -446,7 +499,9 @@ onMounted(() => {
             Operation Failed
           </p>
           <p class="text-sm mt-1 text-destructive/80">
-            {{ device.localError.value || 'An error occurred while communicating with the device.' }}
+            {{
+              device.localError.value || 'An error occurred while communicating with the device.'
+            }}
           </p>
         </div>
         <Button
@@ -474,7 +529,9 @@ onMounted(() => {
             Success
           </p>
           <p class="text-sm mt-1 text-emerald-600 dark:text-emerald-400">
-            {{ device.localSuccess.value || 'Operation completed successfully.' }}
+            {{
+              device.localSuccess.value || 'Operation completed successfully.'
+            }}
           </p>
         </div>
         <Button

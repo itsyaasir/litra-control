@@ -1,24 +1,24 @@
 <div align="center">
   <img src="src/assets/logo-512.svg" alt="Litra Control Logo" width="120" height="120">
-  
-  # Litra Control
-  
-  ### Professional lighting control for Logitech Litra devices
-  
-  [![Build Status](https://github.com/your-username/litra-control/workflows/Build%20and%20Release/badge.svg)](https://github.com/your-username/litra-control/actions)
-  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-  [![Downloads](https://img.shields.io/github/downloads/your-username/litra-control/total)](https://github.com/your-username/litra-control/releases)
-  [![Platform](https://img.shields.io/badge/platform-Linux-green.svg)](https://github.com/your-username/litra-control)
-  
-  <p align="center">
+
+# Litra Control
+
+### Professional lighting control for Logitech Litra devices
+
+[![Build Status](https://github.com/your-username/litra-control/workflows/Build%20and%20Release/badge.svg)](https://github.com/your-username/litra-control/actions)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/your-username/litra-control/total)](https://github.com/your-username/litra-control/releases)
+[![Platform](https://img.shields.io/badge/platform-Linux-green.svg)](https://github.com/your-username/litra-control)
+
+<p align="center">
     <a href="#features">Features</a> •
     <a href="#installation">Installation</a> •
     <a href="#usage">Usage</a> •
     <a href="#development">Development</a> •
     <a href="#contributing">Contributing</a>
   </p>
-  
-  <img src="screenshot.png" alt="Litra Control Screenshot" width="600">
+
+<img src="screenshot.png" alt="Litra Control Screenshot" width="600">
 </div>
 
 ---
@@ -66,13 +66,13 @@
 
 ### 🎨 Lighting Presets
 
-| Preset | Temperature | Brightness | Best For |
-|--------|-------------|------------|----------|
-| **Cozy Daylight** | 5200K | 60% | Natural video calls |
-| **Natural Balance** | 5600K | 70% | Accurate color representation |
-| **Cool Blue** | 6500K | 75% | Crisp, energetic streaming |
-| **Warm Candlelight** | 3000K | 40% | Ambient, comfortable lighting |
-| **Bright Companionship** | 5000K | 100% | Maximum illumination |
+| Preset                   | Temperature | Brightness | Best For                      |
+| ------------------------ | ----------- | ---------- | ----------------------------- |
+| **Cozy Daylight**        | 5200K       | 60%        | Natural video calls           |
+| **Natural Balance**      | 5600K       | 70%        | Accurate color representation |
+| **Cool Blue**            | 6500K       | 75%        | Crisp, energetic streaming    |
+| **Warm Candlelight**     | 3000K       | 40%        | Ambient, comfortable lighting |
+| **Bright Companionship** | 5000K       | 100%       | Maximum illumination          |
 
 ---
 
@@ -164,13 +164,13 @@ flatpak run com.litra.control
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Space` | Toggle power |
-| `↑/↓` | Adjust brightness |
-| `←/→` | Adjust temperature |
-| `1-5` | Apply preset 1-5 |
-| `Ctrl+Q` | Quit application |
+| Shortcut | Action             |
+| -------- | ------------------ |
+| `Space`  | Toggle power       |
+| `↑/↓`    | Adjust brightness  |
+| `←/→`    | Adjust temperature |
+| `1-5`    | Apply preset 1-5   |
+| `Ctrl+Q` | Quit application   |
 
 ---
 

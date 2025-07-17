@@ -3,8 +3,8 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import { Minus, Square, X } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 
-import { Button } from './ui/button'
 import LitraLogo from './LitraLogo.vue'
+import { Button } from './ui/button'
 
 const isMaximized = ref(false)
 const appWindow = getCurrentWindow()
@@ -105,7 +105,8 @@ onMounted(() => {
 }
 
 .titlebar-button {
-  @apply h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-colors;
+  @apply h-8 w-8 p-0 text-muted-foreground hover:text-foreground
+    transition-colors;
   border-radius: 4px;
 }
 

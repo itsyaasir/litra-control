@@ -21,16 +21,33 @@ withDefaults(defineProps<Props>(), {
   >
     <defs>
       <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:0.8" />
+        <stop offset="0%" style="stop-color: #3b82f6; stop-opacity: 1" />
+        <stop offset="100%" style="stop-color: #1d4ed8; stop-opacity: 0.8" />
       </linearGradient>
     </defs>
 
     <!-- Outer container with rounded corners -->
-    <rect x="2" y="2" width="20" height="20" rx="6" ry="6" fill="url(#logoGradient)" />
+    <rect
+      x="2"
+      y="2"
+      width="20"
+      height="20"
+      rx="6"
+      ry="6"
+      fill="url(#logoGradient)"
+    />
 
     <!-- Inner light/bulb shape -->
-    <rect x="6" y="6" width="12" height="12" rx="2" ry="2" fill="white" opacity="0.9" />
+    <rect
+      x="6"
+      y="6"
+      width="12"
+      height="12"
+      rx="2"
+      ry="2"
+      fill="white"
+      opacity="0.9"
+    />
 
     <!-- Light rays effect -->
     <path

@@ -172,8 +172,12 @@ onUnmounted(() => {
 }
 
 .slider-thumb {
-  @apply absolute top-1/2 w-6 h-6 bg-white rounded-full cursor-grab transform -translate-y-1/2 -translate-x-1/2 transition-all duration-200 shadow-xl border-2 border-white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  @apply absolute top-1/2 w-6 h-6 bg-white rounded-full cursor-grab transform
+    -translate-y-1/2 -translate-x-1/2 transition-all duration-200 shadow-xl
+    border-2 border-white;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .slider-thumb:hover {

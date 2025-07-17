@@ -5,7 +5,7 @@ Professional lighting control for Logitech Litra devices on Linux.
 ## Supported Devices
 
 - Logitech Litra Glow
-- Logitech Litra Beam  
+- Logitech Litra Beam
 - Logitech Litra Beam LX
 
 ## Installation
@@ -69,7 +69,7 @@ The DEB and RPM packages automatically set up device permissions. After installa
 
 ### Prerequisites
 
-- Rust 1.70+ 
+- Rust 1.70+
 - Node.js 18+
 - pnpm
 - System dependencies:
@@ -146,16 +146,19 @@ pnpm tauri build
 ## Uninstallation
 
 ### DEB Package
+
 ```bash
 sudo apt remove litra-control
 ```
 
 ### RPM Package
+
 ```bash
 sudo rpm -e litra-control
 ```
 
 ### AppImage
+
 Simply delete the AppImage file and any desktop shortcuts.
 
 ## Support
