@@ -306,117 +306,6 @@ pub async fn decrease_device_temperature(
     Ok(new_temperature)
 }
 
-/// Sets the color temperature using predefined temperature presets.
-///
-/// This command allows setting temperature using common lighting presets
-/// that are automatically converted to appropriate Kelvin values.
-///
-/// # Arguments
-///
-/// * `device_manager` - The global device manager state
-/// * `serial_number` - The serial number of the device to control
-/// * `preset` - The temperature preset to apply
-///
-/// # Returns
-///
-/// Returns the actual temperature set in Kelvin or an error if the device
-/// cannot be found or the operation fails.
-///
-/// # Frontend Usage
-///
-/// ```typescript
-/// import { invoke } from '@tauri-apps/api/core';
-///
-/// const actualTemp = await invoke<number>('set_device_temperature_preset', {
-///     serialNumber: 'ABC123456',
-///     preset: 'Daylight'
-/// });
-/// ```
-#[tauri::command]
-pub async fn set_device_temperature_preset(
-    device_manager: State<'_, DeviceManagerState>,
-    serial_number: String,
-    preset: String,
-) -> Result<u16, AppError> {
-    let kelvin = match preset.as_str() {
-        "Warm" | "Sunset" => 2700,
-        "Soft White" => 3000,
-        "Warm White" => 3200,
-        "Cool White" => 4000,
-        "Daylight" => 5000,
-        "Cool Daylight" => 5500,
-        "Cold" | "Cloudy" => 6500,
-        _ => {
-            return Err(AppError {
-                message: format!("Unknown temperature preset: {preset}"),
-                error_type: "InvalidPreset".to_string(),
-            });
-        }
-    };
-
-    // Use the standard set_device_temperature command with validation
-    set_device_temperature(device_manager, serial_number, kelvin).await?;
-
-    Ok(kelvin)
-}
-
-/// Gets all available temperature presets with their Kelvin values.
-///
-/// This command returns a list of all available temperature presets
-/// that can be used with the set_device_temperature_preset command.
-///
-/// # Returns
-///
-/// Returns a vector of TemperaturePreset structures with preset names and values.
-///
-/// # Frontend Usage
-///
-/// ```typescript
-/// import { invoke } from '@tauri-apps/api/core';
-///
-/// const presets = await invoke<TemperaturePreset[]>('get_temperature_presets');
-/// ```
-#[tauri::command]
-pub async fn get_temperature_presets() -> Result<Vec<TemperaturePreset>, AppError> {
-    Ok(vec![
-        TemperaturePreset {
-            name: "Warm".to_string(),
-            description: "Warm/Sunset lighting".to_string(),
-            kelvin: 2700,
-        },
-        TemperaturePreset {
-            name: "Soft White".to_string(),
-            description: "Soft white lighting".to_string(),
-            kelvin: 3000,
-        },
-        TemperaturePreset {
-            name: "Warm White".to_string(),
-            description: "Warm white lighting".to_string(),
-            kelvin: 3200,
-        },
-        TemperaturePreset {
-            name: "Cool White".to_string(),
-            description: "Cool white lighting".to_string(),
-            kelvin: 4000,
-        },
-        TemperaturePreset {
-            name: "Daylight".to_string(),
-            description: "Natural daylight".to_string(),
-            kelvin: 5000,
-        },
-        TemperaturePreset {
-            name: "Cool Daylight".to_string(),
-            description: "Cool daylight".to_string(),
-            kelvin: 5500,
-        },
-        TemperaturePreset {
-            name: "Cold".to_string(),
-            description: "Cold/Cloudy lighting".to_string(),
-            kelvin: 6500,
-        },
-    ])
-}
-
 /// Validates if a temperature value is valid for Litra devices.
 ///
 /// This utility function checks if a temperature value meets all requirements:
@@ -523,6 +412,54 @@ pub async fn round_temperature(kelvin: u16) -> Result<u16, AppError> {
     Ok(rounded.max(MIN_TEMPERATURE).min(MAX_TEMPERATURE))
 }
 
+/// Sets the temperature of a specific Litra device using Kelvin.
+///
+/// This command sets the absolute temperature in Kelvin.
+///
+/// # Arguments
+///
+/// * `device_manager` - The global device manager state
+/// * `serial_number` - The serial number of the device to control
+/// * `kelvin` - The temperature value in Kelvin
+///
+/// # Returns
+///
+/// Returns success or an error if the device cannot be found, the value is invalid,
+/// or the operation fails.
+///
+/// # Frontend Usage
+///
+/// ```typescript
+/// import { invoke } from '@tauri-apps/api/core';
+///
+/// await invoke('set_temperature_in_kelvin', {
+///     serialNumber: 'ABC123456',
+///     kelvin: 4500
+/// });
+/// ```
+#[tauri::command]
+pub async fn set_temperature_in_kelvin(
+    device_manager: State<'_, DeviceManagerState>,
+    serial_number: String,
+    kelvin: u16,
+) -> Result<(), AppError> {
+    let manager = device_manager.lock().map_err(|e| AppError {
+        message: format!("Failed to acquire device manager lock: {e}"),
+        error_type: "MutexError".to_string(),
+    })?;
+
+    let handle = manager.get_device_handle(&serial_number)?;
+
+    handle
+        .set_temperature_in_kelvin(kelvin)
+        .map_err(|e| AppError {
+            message: format!("Failed to set temperature for device {serial_number}: {e}"),
+            error_type: "TemperatureControlError".to_string(),
+        })?;
+
+    Ok(())
+}
+
 /// Comprehensive temperature information structure.
 ///
 /// This structure contains all temperature-related information for a device
@@ -543,20 +480,4 @@ pub struct TemperatureInfo {
 
     /// Temperature step increment (always 100K for Litra devices)
     pub step_kelvin: u16,
-}
-
-/// Temperature preset information structure.
-///
-/// This structure contains information about predefined temperature presets
-/// that provide common lighting scenarios.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct TemperaturePreset {
-    /// Human-readable name of the preset
-    pub name: String,
-
-    /// Description of the lighting scenario
-    pub description: String,
-
-    /// Temperature value in Kelvin
-    pub kelvin: u16,
 }

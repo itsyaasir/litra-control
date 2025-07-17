@@ -40,9 +40,9 @@ const progressPercentage = computed(() => {
 const gradientClass = computed(() => {
   switch (props.gradientType) {
     case 'temperature':
-      return 'bg-gradient-to-r from-orange-500 via-yellow-300 to-blue-400'
+      return 'bg-gradient-to-r from-blue-400 via-cyan-300 via-yellow-300 to-orange-400'
     case 'brightness':
-      return 'bg-gradient-to-r from-gray-700 to-white'
+      return 'bg-gradient-to-r from-gray-800 via-gray-600 to-gray-200'
     default:
       return ''
   }
@@ -96,44 +96,6 @@ function endDrag() {
   isDragging.value = false
 }
 
-// Handle keyboard navigation
-function handleKeyDown(event: KeyboardEvent) {
-  if (props.disabled)
-    return
-
-  let newValue = props.modelValue
-  const stepSize = props.step
-  const largeStep = (props.max - props.min) / 10
-
-  switch (event.key) {
-    case 'ArrowLeft':
-    case 'ArrowDown':
-      newValue = Math.max(props.min, props.modelValue - stepSize)
-      break
-    case 'ArrowRight':
-    case 'ArrowUp':
-      newValue = Math.min(props.max, props.modelValue + stepSize)
-      break
-    case 'PageDown':
-      newValue = Math.max(props.min, props.modelValue - largeStep)
-      break
-    case 'PageUp':
-      newValue = Math.min(props.max, props.modelValue + largeStep)
-      break
-    case 'Home':
-      newValue = props.min
-      break
-    case 'End':
-      newValue = props.max
-      break
-    default:
-      return
-  }
-
-  event.preventDefault()
-  emit('update:modelValue', Math.round(newValue / props.step) * props.step)
-}
-
 // Setup event listeners
 onMounted(() => {
   document.addEventListener('mousemove', handleMove)
@@ -156,27 +118,26 @@ onUnmounted(() => {
     <div
       ref="track"
       class="slider-track"
-      :class="trackClass"
+      :class="[trackClass, { disabled }]"
       @click="handleTrackClick"
     >
       <!-- Background gradient (for temperature and brightness) -->
       <div
-        v-if="gradientType"
+        v-if="gradientType !== 'none'"
         class="slider-gradient"
         :class="gradientClass"
       />
 
-      <!-- Progress fill -->
+      <!-- Default track background (when no gradient) -->
       <div
-        class="slider-progress"
-        :style="{ width: `${progressPercentage}%` }"
-        :class="progressClass"
+        v-else
+        class="slider-background"
       />
 
       <!-- Thumb -->
       <div
         class="slider-thumb"
-        :class="thumbClass"
+        :class="[thumbClass, { disabled }]"
         :style="{ left: `${progressPercentage}%` }"
         tabindex="0"
         role="slider"
@@ -186,7 +147,6 @@ onUnmounted(() => {
         :aria-disabled="disabled"
         @mousedown="startDrag"
         @touchstart="startDrag"
-        @keydown="handleKeyDown"
       />
     </div>
   </div>
@@ -196,35 +156,38 @@ onUnmounted(() => {
 @reference "../index.css";
 
 .custom-slider-container {
-  @apply relative w-full py-2;
+  @apply relative w-full py-3;
 }
 
 .slider-track {
-  @apply relative w-full h-1.5 bg-muted rounded-full cursor-pointer;
+  @apply relative w-full h-3 rounded-full cursor-pointer overflow-hidden;
 }
 
 .slider-gradient {
   @apply absolute inset-0 rounded-full;
 }
 
-.slider-progress {
-  @apply absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-200;
+.slider-background {
+  @apply absolute inset-0 bg-muted rounded-full;
 }
 
 .slider-thumb {
-  @apply absolute top-1/2 w-5 h-5 bg-background border-2 border-primary rounded-full cursor-grab transform -translate-y-1/2 -translate-x-1/2 transition-all duration-200 shadow-lg;
+  @apply absolute top-1/2 w-6 h-6 bg-white rounded-full cursor-grab transform -translate-y-1/2 -translate-x-1/2 transition-all duration-200 shadow-xl border-2 border-white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .slider-thumb:hover {
-  @apply scale-110 shadow-xl;
+  @apply scale-115;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .slider-thumb:active {
   @apply cursor-grabbing scale-105;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
 .slider-thumb:focus {
-  @apply outline-none ring-2 ring-ring/50;
+  @apply outline-none ring-2 ring-primary/50;
 }
 
 /* Disabled state */
@@ -238,5 +201,12 @@ onUnmounted(() => {
 
 .slider-thumb.disabled:hover {
   @apply scale-100 shadow-lg;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .slider-thumb {
+    @apply bg-white border-white;
+  }
 }
 </style>

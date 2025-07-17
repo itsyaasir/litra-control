@@ -62,9 +62,7 @@ pub async fn set_device_brightness(
     handle
         .set_brightness_in_lumen(lumens)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to set brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to set brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -114,9 +112,7 @@ pub async fn set_device_brightness_percentage(
     // Validate percentage range
     if percentage > 100 {
         return Err(AppError {
-            message: format!(
-                "Percentage {percentage} is invalid. Must be between 0-100"
-            ),
+            message: format!("Percentage {percentage} is invalid. Must be between 0-100"),
             error_type: "BrightnessRangeError".to_string(),
         });
     }
@@ -130,9 +126,7 @@ pub async fn set_device_brightness_percentage(
     handle
         .set_brightness_in_lumen(lumens)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to set brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to set brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -177,9 +171,7 @@ pub async fn get_device_brightness(
 
     // Get current brightness
     let current_lumens = handle.brightness_in_lumen().map_err(|e| AppError {
-        message: format!(
-            "Failed to get brightness for device {serial_number}: {e}"
-        ),
+        message: format!("Failed to get brightness for device {serial_number}: {e}"),
         error_type: "BrightnessControlError".to_string(),
     })?;
 
@@ -245,9 +237,7 @@ pub async fn increase_device_brightness(
 
     // Get current brightness
     let current_lumens = handle.brightness_in_lumen().map_err(|e| AppError {
-        message: format!(
-            "Failed to get brightness for device {serial_number}: {e}"
-        ),
+        message: format!("Failed to get brightness for device {serial_number}: {e}"),
         error_type: "BrightnessControlError".to_string(),
     })?;
 
@@ -267,9 +257,7 @@ pub async fn increase_device_brightness(
     handle
         .set_brightness_in_lumen(new_brightness)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to increase brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to increase brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -318,9 +306,7 @@ pub async fn decrease_device_brightness(
 
     // Get current brightness
     let current_lumens = handle.brightness_in_lumen().map_err(|e| AppError {
-        message: format!(
-            "Failed to get brightness for device {serial_number}: {e}"
-        ),
+        message: format!("Failed to get brightness for device {serial_number}: {e}"),
         error_type: "BrightnessControlError".to_string(),
     })?;
 
@@ -340,9 +326,7 @@ pub async fn decrease_device_brightness(
     handle
         .set_brightness_in_lumen(new_brightness)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to decrease brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to decrease brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -391,9 +375,7 @@ pub async fn increase_device_brightness_percentage(
 
     // Get current brightness info
     let current_lumens = handle.brightness_in_lumen().map_err(|e| AppError {
-        message: format!(
-            "Failed to get brightness for device {serial_number}: {e}"
-        ),
+        message: format!("Failed to get brightness for device {serial_number}: {e}"),
         error_type: "BrightnessControlError".to_string(),
     })?;
 
@@ -425,9 +407,7 @@ pub async fn increase_device_brightness_percentage(
     handle
         .set_brightness_in_lumen(new_lumens)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to increase brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to increase brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -476,9 +456,7 @@ pub async fn decrease_device_brightness_percentage(
 
     // Get current brightness info
     let current_lumens = handle.brightness_in_lumen().map_err(|e| AppError {
-        message: format!(
-            "Failed to get brightness for device {serial_number}: {e}"
-        ),
+        message: format!("Failed to get brightness for device {serial_number}: {e}"),
         error_type: "BrightnessControlError".to_string(),
     })?;
 
@@ -502,9 +480,7 @@ pub async fn decrease_device_brightness_percentage(
     handle
         .set_brightness_in_lumen(new_lumens)
         .map_err(|e| AppError {
-            message: format!(
-                "Failed to decrease brightness for device {serial_number}: {e}"
-            ),
+            message: format!("Failed to decrease brightness for device {serial_number}: {e}"),
             error_type: "BrightnessControlError".to_string(),
         })?;
 
@@ -553,6 +529,54 @@ pub async fn validate_device_brightness(
     let max_brightness = handle.maximum_brightness_in_lumen();
 
     Ok(lumens >= min_brightness && lumens <= max_brightness)
+}
+
+/// Sets the brightness of a specific Litra device using lumens.
+///
+/// This command sets the absolute brightness level in lumens.
+///
+/// # Arguments
+///
+/// * `device_manager` - The global device manager state
+/// * `serial_number` - The serial number of the device to control
+/// * `lumens` - The brightness value in lumens
+///
+/// # Returns
+///
+/// Returns success or an error if the device cannot be found, the value is invalid,
+/// or the operation fails.
+///
+/// # Frontend Usage
+///
+/// ```typescript
+/// import { invoke } from '@tauri-apps/api/core';
+///
+/// await invoke('set_brightness_in_lumen', {
+///     serialNumber: 'ABC123456',
+///     lumens: 150
+/// });
+/// ```
+#[tauri::command]
+pub async fn set_brightness_in_lumen(
+    device_manager: State<'_, DeviceManagerState>,
+    serial_number: String,
+    lumens: u16,
+) -> Result<(), AppError> {
+    let manager = device_manager.lock().map_err(|e| AppError {
+        message: format!("Failed to acquire device manager lock: {e}"),
+        error_type: "MutexError".to_string(),
+    })?;
+
+    let handle = manager.get_device_handle(&serial_number)?;
+
+    handle
+        .set_brightness_in_lumen(lumens)
+        .map_err(|e| AppError {
+            message: format!("Failed to set brightness for device {serial_number}: {e}"),
+            error_type: "BrightnessControlError".to_string(),
+        })?;
+
+    Ok(())
 }
 
 /// Comprehensive brightness information structure.

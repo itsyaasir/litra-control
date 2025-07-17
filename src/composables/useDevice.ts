@@ -4,8 +4,8 @@
 /// with automatic error handling and state management.
 
 import type { DeviceOperation } from '../types'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useDeviceStore, useSettingsStore } from '../stores'
+import { computed, onMounted, ref } from 'vue'
+import { useDeviceStore } from '../stores'
 
 /**
  * Composable for managing device operations with automatic state management.
@@ -15,17 +15,14 @@ import { useDeviceStore, useSettingsStore } from '../stores'
  */
 export function useDevice(serialNumber?: string) {
   const deviceStore = useDeviceStore()
-  const settingsStore = useSettingsStore()
 
   // Local reactive state
   const localError = ref<string | null>(null)
   const localSuccess = ref<string | null>(null)
 
-  // Computed properties
-  const devices = computed(() => deviceStore.filteredDevices)
+  const devices = computed(() => deviceStore.devices)
   const selectedDevice = computed(() => deviceStore.selectedDevice)
   const deviceStats = computed(() => deviceStore.deviceStats)
-  const temperaturePresets = computed(() => deviceStore.temperaturePresets)
 
   // Get specific device if serialNumber provided
   const device = computed(() => {
@@ -218,7 +215,7 @@ export function useDevice(serialNumber?: string) {
     }
   }
 
-  const setTemperaturePreset = async (preset: string, targetSerial?: string) => {
+  const setTemperatureInKelvin = async (kelvin: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
       showError('No device selected')
       return
@@ -227,37 +224,31 @@ export function useDevice(serialNumber?: string) {
     const serial = targetSerial || device.value!.serial_number
 
     try {
-      await deviceStore.setTemperaturePreset(serial, preset)
+      await deviceStore.setTemperatureInKelvin(serial, kelvin)
     }
     catch (error: any) {
-      showError(error.message || 'Failed to set temperature preset')
+      showError(error.message || 'Failed to set temperature')
     }
   }
 
-  // Auto-refresh management
-  const startAutoRefresh = () => {
-    deviceStore.startAutoRefresh(settingsStore.settings.autoRefreshInterval)
-  }
-
-  const stopAutoRefresh = () => {
-    deviceStore.stopAutoRefresh()
-  }
-
-  const toggleAutoRefresh = () => {
-    if (deviceStore.autoRefreshEnabled) {
-      stopAutoRefresh()
+  const setBrightnessInLumen = async (lumens: number, targetSerial?: string) => {
+    if (!device.value && !targetSerial) {
+      showError('No device selected')
+      return
     }
-    else {
-      startAutoRefresh()
+
+    const serial = targetSerial || device.value!.serial_number
+
+    try {
+      await deviceStore.setBrightnessInLumen(serial, lumens)
     }
-    deviceStore.autoRefreshEnabled = !deviceStore.autoRefreshEnabled
+    catch (error: any) {
+      showError(error.message || 'Failed to set brightness')
+    }
   }
 
   // Lifecycle
   onMounted(async () => {
-    // Load temperature presets
-    await deviceStore.loadTemperaturePresets()
-
     // Initial device discovery
     await discoverDevices()
 
@@ -265,29 +256,7 @@ export function useDevice(serialNumber?: string) {
     if (!deviceStore.selectedDeviceSerial && deviceStore.devices.length > 0) {
       selectFirstDevice()
     }
-
-    // Start auto-refresh if enabled
-    if (settingsStore.settings.autoRefreshInterval > 0) {
-      startAutoRefresh()
-    }
   })
-
-  onUnmounted(() => {
-    stopAutoRefresh()
-  })
-
-  // Watch for settings changes
-  watch(
-    () => settingsStore.settings.autoRefreshInterval,
-    (newInterval) => {
-      if (deviceStore.autoRefreshEnabled) {
-        stopAutoRefresh()
-        if (newInterval > 0) {
-          startAutoRefresh()
-        }
-      }
-    },
-  )
 
   return {
     // State
@@ -295,7 +264,6 @@ export function useDevice(serialNumber?: string) {
     selectedDevice,
     device,
     deviceStats,
-    temperaturePresets,
 
     // Loading states
     isDiscovering,
@@ -328,18 +296,13 @@ export function useDevice(serialNumber?: string) {
     // Brightness operations
     setBrightness,
     setBrightnessPercentage,
+    setBrightnessInLumen,
 
     // Temperature operations
     setTemperature,
-    setTemperaturePreset,
-
-    // Auto-refresh
-    startAutoRefresh,
-    stopAutoRefresh,
-    toggleAutoRefresh,
+    setTemperatureInKelvin,
 
     // Store access for advanced usage
     deviceStore,
-    settingsStore,
   }
 }

@@ -54,11 +54,11 @@ pub fn run() {
             get_device_temperature,
             increase_device_temperature,
             decrease_device_temperature,
-            set_device_temperature_preset,
-            get_temperature_presets,
             validate_temperature,
             validate_device_temperature,
-            round_temperature
+            round_temperature,
+            set_temperature_in_kelvin,
+            set_brightness_in_lumen,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
