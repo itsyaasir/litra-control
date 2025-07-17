@@ -3,7 +3,7 @@
 
 # Litra Control
 
-### Professional lighting control for Logitech Litra devices
+### A modern Linux desktop application for controlling Logitech Litra devices
 
 [![Build Status](https://github.com/itsyaasir/litra-control/workflows/Build%20and%20Release/badge.svg)](https://github.com/itsyaasir/litra-control/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
