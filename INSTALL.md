@@ -163,4 +163,4 @@ Simply delete the AppImage file and any desktop shortcuts.
 
 ## Support
 
-For issues and support, please visit the [GitHub Issues](https://github.com/your-repo/litra-control/issues) page.
+For issues and support, please visit the [GitHub Issues](https://github.com/itsyaasir/litra-control/issues) page.

@@ -5,10 +5,10 @@
 
 ### Professional lighting control for Logitech Litra devices
 
-[![Build Status](https://github.com/your-username/litra-control/workflows/Build%20and%20Release/badge.svg)](https://github.com/your-username/litra-control/actions)
+[![Build Status](https://github.com/itsyaasir/litra-control/workflows/Build%20and%20Release/badge.svg)](https://github.com/itsyaasir/litra-control/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Downloads](https://img.shields.io/github/downloads/your-username/litra-control/total)](https://github.com/your-username/litra-control/releases)
-[![Platform](https://img.shields.io/badge/platform-Linux-green.svg)](https://github.com/your-username/litra-control)
+[![Downloads](https://img.shields.io/github/downloads/itsyaasir/litra-control/total)](https://github.com/itsyaasir/litra-control/releases)
+[![Platform](https://img.shields.io/badge/platform-Linux-green.svg)](https://github.com/itsyaasir/litra-control)
 
 <p align="center">
     <a href="#features">Features</a> •
@@ -120,26 +120,14 @@ chmod +x litra-control.AppImage
 <details>
 <summary><strong>Arch Linux (AUR)</strong></summary>
 
-```bash
-# Using yay
-yay -S litra-control
-
-# Using paru
-paru -S litra-control
-```
+Coming soon
 
 </details>
 
 <details>
 <summary><strong>Flatpak</strong></summary>
 
-```bash
-# Install from Flathub
-flatpak install flathub com.litra.control
-
-# Run
-flatpak run com.litra.control
-```
+Coming soon
 
 </details>
 
@@ -230,9 +218,11 @@ pnpm tauri dev
 # Build for production
 pnpm tauri build
 
-# Build Linux packages
-./build-linux.sh
 ```
+
+# Bundles
+
+The bundles will be in the `src-tauri/target/release/bundle` directory.
 
 ### Project Structure
 
