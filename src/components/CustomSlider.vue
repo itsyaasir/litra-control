@@ -1,47 +1,5 @@
-<template>
-  <div class="custom-slider-container" ref="sliderContainer">
-    <!-- Track -->
-    <div 
-      class="slider-track"
-      :class="trackClass"
-      @click="handleTrackClick"
-      ref="track"
-    >
-      <!-- Background gradient (for temperature and brightness) -->
-      <div 
-        v-if="gradientType"
-        class="slider-gradient"
-        :class="gradientClass"
-      ></div>
-      
-      <!-- Progress fill -->
-      <div 
-        class="slider-progress"
-        :style="{ width: progressPercentage + '%' }"
-        :class="progressClass"
-      ></div>
-      
-      <!-- Thumb -->
-      <div
-        class="slider-thumb"
-        :class="thumbClass"
-        :style="{ left: progressPercentage + '%' }"
-        @mousedown="startDrag"
-        @touchstart="startDrag"
-        tabindex="0"
-        @keydown="handleKeyDown"
-        role="slider"
-        :aria-valuenow="modelValue"
-        :aria-valuemin="min"
-        :aria-valuemax="max"
-        :aria-disabled="disabled"
-      ></div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 interface Props {
   modelValue: number
@@ -60,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   max: 100,
   step: 1,
   disabled: false,
-  gradientType: 'none'
+  gradientType: 'none',
 })
 
 const emit = defineEmits<{
@@ -73,7 +31,8 @@ const isDragging = ref(false)
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (props.max === props.min) return 0
+  if (props.max === props.min)
+    return 0
   return ((props.modelValue - props.min) / (props.max - props.min)) * 100
 })
 
@@ -90,57 +49,62 @@ const gradientClass = computed(() => {
 })
 
 // Update value based on position
-const updateValue = (clientX: number) => {
-  if (!track.value || props.disabled) return
-  
+function updateValue(clientX: number) {
+  if (!track.value || props.disabled)
+    return
+
   const rect = track.value.getBoundingClientRect()
   const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
   const rawValue = props.min + percentage * (props.max - props.min)
   const steppedValue = Math.round(rawValue / props.step) * props.step
   const clampedValue = Math.max(props.min, Math.min(props.max, steppedValue))
-  
+
   emit('update:modelValue', clampedValue)
 }
 
 // Handle track click
-const handleTrackClick = (event: MouseEvent) => {
-  if (props.disabled) return
+function handleTrackClick(event: MouseEvent) {
+  if (props.disabled)
+    return
   updateValue(event.clientX)
 }
 
 // Handle drag start
-const startDrag = (event: MouseEvent | TouchEvent) => {
-  if (props.disabled) return
-  
+function startDrag(event: MouseEvent | TouchEvent) {
+  if (props.disabled)
+    return
+
   isDragging.value = true
   event.preventDefault()
-  
+
   const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX
   updateValue(clientX)
 }
 
 // Handle mouse/touch move
-const handleMove = (event: MouseEvent | TouchEvent) => {
-  if (!isDragging.value || props.disabled) return
-  
+function handleMove(event: MouseEvent | TouchEvent) {
+  if (!isDragging.value || props.disabled)
+    return
+
   event.preventDefault()
   const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX
   updateValue(clientX)
 }
 
 // Handle drag end
-const endDrag = () => {
+function endDrag() {
   isDragging.value = false
 }
 
 // Handle keyboard navigation
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (props.disabled) return
-  
+function handleKeyDown(event: KeyboardEvent) {
+  if (props.disabled)
+    return
+
   let newValue = props.modelValue
   const stepSize = props.step
   const largeStep = (props.max - props.min) / 10
-  
+
   switch (event.key) {
     case 'ArrowLeft':
     case 'ArrowDown':
@@ -165,7 +129,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
     default:
       return
   }
-  
+
   event.preventDefault()
   emit('update:modelValue', Math.round(newValue / props.step) * props.step)
 }
@@ -185,6 +149,48 @@ onUnmounted(() => {
   document.removeEventListener('touchend', endDrag)
 })
 </script>
+
+<template>
+  <div ref="sliderContainer" class="custom-slider-container">
+    <!-- Track -->
+    <div
+      ref="track"
+      class="slider-track"
+      :class="trackClass"
+      @click="handleTrackClick"
+    >
+      <!-- Background gradient (for temperature and brightness) -->
+      <div
+        v-if="gradientType"
+        class="slider-gradient"
+        :class="gradientClass"
+      />
+
+      <!-- Progress fill -->
+      <div
+        class="slider-progress"
+        :style="{ width: `${progressPercentage}%` }"
+        :class="progressClass"
+      />
+
+      <!-- Thumb -->
+      <div
+        class="slider-thumb"
+        :class="thumbClass"
+        :style="{ left: `${progressPercentage}%` }"
+        tabindex="0"
+        role="slider"
+        :aria-valuenow="modelValue"
+        :aria-valuemin="min"
+        :aria-valuemax="max"
+        :aria-disabled="disabled"
+        @mousedown="startDrag"
+        @touchstart="startDrag"
+        @keydown="handleKeyDown"
+      />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 @reference "../index.css";
@@ -233,4 +239,4 @@ onUnmounted(() => {
 .slider-thumb.disabled:hover {
   @apply scale-100 shadow-lg;
 }
-</style> 
+</style>

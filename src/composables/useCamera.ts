@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from 'vue'
+import { onUnmounted, ref } from 'vue'
 
 export interface CameraDevice {
   deviceId: string
@@ -25,14 +25,15 @@ export function useCamera() {
         .map(device => ({
           deviceId: device.deviceId,
           label: device.label || `Camera ${device.deviceId.slice(0, 8)}`,
-          kind: device.kind
+          kind: device.kind,
         }))
 
       // Select first camera by default
       if (availableCameras.value.length > 0 && !selectedCameraId.value) {
         selectedCameraId.value = availableCameras.value[0].deviceId
       }
-    } catch (err) {
+    }
+    catch (err) {
       error.value = 'Failed to get camera devices'
       console.error('Error getting cameras:', err)
     }
@@ -54,9 +55,9 @@ export function useCamera() {
           deviceId: deviceId ? { exact: deviceId } : undefined,
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          facingMode: 'user'
+          facingMode: 'user',
         },
-        audio: false
+        audio: false,
       }
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
@@ -71,17 +72,21 @@ export function useCamera() {
 
       // Get updated camera list with labels
       await getCameras()
-    } catch (err: any) {
+    }
+    catch (err: any) {
       isStreaming.value = false
 
       if (err.name === 'NotAllowedError') {
         error.value = 'Camera access denied. Please allow camera permissions.'
         permissionDenied.value = true
-      } else if (err.name === 'NotFoundError') {
+      }
+      else if (err.name === 'NotFoundError') {
         error.value = 'No camera found'
-      } else if (err.name === 'NotReadableError') {
+      }
+      else if (err.name === 'NotReadableError') {
         error.value = 'Camera is already in use'
-      } else {
+      }
+      else {
         error.value = 'Failed to start camera'
       }
 
@@ -121,7 +126,8 @@ export function useCamera() {
     try {
       const result = await navigator.permissions.query({ name: 'camera' as PermissionName })
       return result.state // 'granted', 'denied', 'prompt'
-    } catch (err) {
+    }
+    catch (err) {
       console.warn('Permission API not supported')
       return 'prompt'
     }
@@ -132,18 +138,19 @@ export function useCamera() {
     try {
       error.value = ''
       permissionDenied.value = false
-      
+
       // Try to get a temporary stream just to trigger permission
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: { min: 1 }, height: { min: 1 } },
-        audio: false 
+        audio: false,
       })
-      
+
       // Stop the temporary stream immediately
       stream.getTracks().forEach(track => track.stop())
-      
+
       return true
-    } catch (err: any) {
+    }
+    catch (err: any) {
       if (err.name === 'NotAllowedError') {
         error.value = 'Camera permission denied. Please allow camera access in your system settings.'
         permissionDenied.value = true
@@ -163,7 +170,7 @@ export function useCamera() {
   // Initialize
   const initialize = async () => {
     checkPlatform()
-    
+
     if (isLinux.value) {
       error.value = 'Camera features are not available on Linux systems'
       return
@@ -198,6 +205,6 @@ export function useCamera() {
     isCameraSupported,
     checkPermission,
     requestPermission,
-    initialize
+    initialize,
   }
 }

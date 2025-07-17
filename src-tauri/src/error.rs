@@ -1,14 +1,13 @@
 /// Error handling module for the Litra Control application.
-/// 
+///
 /// This module provides comprehensive error types and utilities for handling
 /// device communication errors, I/O errors, and application-specific errors.
-
 use litra::DeviceError;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Application-specific error type that can be serialized for frontend communication.
-/// 
+///
 /// This error type wraps various underlying errors and provides a consistent
 /// interface for error handling throughout the application.
 #[derive(Debug, Serialize, Deserialize)]
@@ -61,7 +60,7 @@ pub fn app_error(message: &str, error_type: &str) -> AppError {
 /// Creates a device not found error.
 pub fn device_not_found_error(serial_number: &str) -> AppError {
     app_error(
-        &format!("Device with serial number {} not found", serial_number),
+        &format!("Device with serial number {serial_number} not found"),
         "DeviceNotFound",
     )
 }

@@ -1,13 +1,15 @@
 {
   "name": "litra",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
@@ -26,9 +28,11 @@
     "vue-sonner": "^2.0.2"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^4.17.0",
     "@tauri-apps/cli": "^2",
     "@types/node": "^24.0.14",
     "@vitejs/plugin-vue": "^5.2.1",
+    "eslint": "^9.31.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3",
     "vue-tsc": "^2.1.10"

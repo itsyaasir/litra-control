@@ -1,10 +1,10 @@
 /// Settings store for managing application preferences with Pinia.
-/// 
+///
 /// This store handles user preferences, app settings, and persistent configuration.
 
+import type { AppSettings } from '../types'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import type { AppSettings } from '../types'
 
 const SETTINGS_STORAGE_KEY = 'litra-control-settings'
 
@@ -13,7 +13,7 @@ const defaultSettings: AppSettings = {
   autoRefreshInterval: 5000,
   showNotifications: true,
   defaultBrightness: 50,
-  defaultTemperature: 4000
+  defaultTemperature: 4000,
 }
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -29,7 +29,8 @@ export const useSettingsStore = defineStore('settings', () => {
         const parsedSettings = JSON.parse(stored)
         settings.value = { ...defaultSettings, ...parsedSettings }
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.warn('Failed to load settings from localStorage:', error)
       settings.value = { ...defaultSettings }
     }
@@ -40,7 +41,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const saveSettings = (): void => {
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings.value))
-    } catch (error) {
+    }
+    catch (error) {
       console.warn('Failed to save settings to localStorage:', error)
     }
   }
@@ -53,7 +55,7 @@ export const useSettingsStore = defineStore('settings', () => {
         saveSettings()
       }
     },
-    { deep: true }
+    { deep: true },
   )
 
   // Actions
@@ -91,12 +93,13 @@ export const useSettingsStore = defineStore('settings', () => {
   // Theme application
   const applyTheme = (theme: AppSettings['theme']): void => {
     const root = document.documentElement
-    
+
     if (theme === 'system') {
       // Use system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       root.classList.toggle('dark', prefersDark)
-    } else {
+    }
+    else {
       root.classList.toggle('dark', theme === 'dark')
     }
   }
@@ -104,7 +107,7 @@ export const useSettingsStore = defineStore('settings', () => {
   // Initialize theme system preference listener
   const initializeTheme = (): void => {
     applyTheme(settings.value.theme)
-    
+
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (settings.value.theme === 'system') {
@@ -121,38 +124,39 @@ export const useSettingsStore = defineStore('settings', () => {
   const importSettings = (settingsJson: string): boolean => {
     try {
       const importedSettings = JSON.parse(settingsJson)
-      
+
       // Validate imported settings
       const validatedSettings: Partial<AppSettings> = {}
-      
+
       if (['light', 'dark', 'system'].includes(importedSettings.theme)) {
         validatedSettings.theme = importedSettings.theme
       }
-      
+
       if (typeof importedSettings.autoRefreshInterval === 'number' && importedSettings.autoRefreshInterval >= 1000) {
         validatedSettings.autoRefreshInterval = importedSettings.autoRefreshInterval
       }
-      
+
       if (typeof importedSettings.showNotifications === 'boolean') {
         validatedSettings.showNotifications = importedSettings.showNotifications
       }
-      
-      if (typeof importedSettings.defaultBrightness === 'number' && 
-          importedSettings.defaultBrightness >= 0 && 
-          importedSettings.defaultBrightness <= 100) {
+
+      if (typeof importedSettings.defaultBrightness === 'number'
+        && importedSettings.defaultBrightness >= 0
+        && importedSettings.defaultBrightness <= 100) {
         validatedSettings.defaultBrightness = importedSettings.defaultBrightness
       }
-      
-      if (typeof importedSettings.defaultTemperature === 'number' && 
-          importedSettings.defaultTemperature >= 2700 && 
-          importedSettings.defaultTemperature <= 6500 &&
-          importedSettings.defaultTemperature % 100 === 0) {
+
+      if (typeof importedSettings.defaultTemperature === 'number'
+        && importedSettings.defaultTemperature >= 2700
+        && importedSettings.defaultTemperature <= 6500
+        && importedSettings.defaultTemperature % 100 === 0) {
         validatedSettings.defaultTemperature = importedSettings.defaultTemperature
       }
-      
+
       updateSettings(validatedSettings)
       return true
-    } catch (error) {
+    }
+    catch (error) {
       console.warn('Failed to import settings:', error)
       return false
     }
@@ -183,6 +187,6 @@ export const useSettingsStore = defineStore('settings', () => {
 
     // Theme utilities
     applyTheme,
-    initializeTheme
+    initializeTheme,
   }
 })

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
-import { useDevice, useCamera } from './composables'
-import { useSettingsStore } from './stores'
-import { RefreshCw, Settings, Lightbulb, Edit3, ChevronDown, Camera, Zap, Moon, Sun, Menu, X } from 'lucide-vue-next'
+import { Camera, ChevronDown, Edit3, Lightbulb, Menu, Moon, RefreshCw, Settings, Sun, X, Zap } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import CameraPermissionHelp from './components/CameraPermissionHelp.vue'
+import CameraPreview from './components/CameraPreview.vue'
 
+import CustomSlider from './components/CustomSlider.vue'
 // Components
 import { Button } from './components/ui/button'
-import { Switch } from './components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select'
-import CustomSlider from './components/CustomSlider.vue'
-import CameraPreview from './components/CameraPreview.vue'
-import CameraPermissionHelp from './components/CameraPermissionHelp.vue'
+import { Switch } from './components/ui/switch'
+import { useCamera, useDevice } from './composables'
+import { useSettingsStore } from './stores'
 
 const device = useDevice()
 const settingsStore = useSettingsStore()
@@ -32,26 +32,26 @@ onMounted(() => {
 const selectedDevice = computed(() => device.selectedDevice.value)
 
 // Handle device selection from dropdown
-const handleDeviceSelect = (value: any) => {
+function handleDeviceSelect(value: any) {
   if (value && typeof value === 'string') {
     device.selectDevice(value)
   }
 }
 
 // Handle device operations
-const handlePowerToggle = (checked: boolean) => {
+function handlePowerToggle(checked: boolean) {
   if (selectedDevice.value) {
     device.setPowerState(checked, selectedDevice.value.serial_number)
   }
 }
 
-const handleBrightnessChange = (value: number) => {
+function handleBrightnessChange(value: number) {
   if (selectedDevice.value) {
     device.setBrightness(value, selectedDevice.value.serial_number)
   }
 }
 
-const handleTemperatureChange = (value: number) => {
+function handleTemperatureChange(value: number) {
   if (selectedDevice.value) {
     device.setTemperature(value, selectedDevice.value.serial_number)
   }
@@ -59,7 +59,8 @@ const handleTemperatureChange = (value: number) => {
 
 // Calculate percentage values
 const brightnessPercentage = computed(() => {
-  if (!selectedDevice.value) return 0
+  if (!selectedDevice.value)
+    return 0
   const { brightness_lumens, min_brightness_lumens, max_brightness_lumens } = selectedDevice.value
   return Math.round(((brightness_lumens - min_brightness_lumens) / (max_brightness_lumens - min_brightness_lumens)) * 100)
 })
@@ -68,7 +69,7 @@ const brightnessPercentage = computed(() => {
 const sidebarOpen = ref(false)
 
 // Close sidebar when clicking outside on mobile
-const closeSidebarOnResize = () => {
+function closeSidebarOnResize() {
   if (window.innerWidth >= 768) {
     sidebarOpen.value = false
   }
@@ -76,20 +77,20 @@ const closeSidebarOnResize = () => {
 
 // Listen for window resize
 
-const toggleSidebar = () => {
+function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value
 }
 
 // Camera control functions
-const startCamera = async () => {
+async function startCamera() {
   await camera.startStream(camera.selectedCameraId.value)
 }
 
-const stopCamera = () => {
+function stopCamera() {
   camera.stopStream()
 }
 
-const handleCameraChange = async (deviceId: any) => {
+async function handleCameraChange(deviceId: any) {
   if (deviceId && typeof deviceId === 'string') {
     await camera.switchCamera(deviceId)
   }
@@ -98,24 +99,24 @@ const handleCameraChange = async (deviceId: any) => {
 // Permission help modal
 const showPermissionHelp = ref(false)
 
-const handlePermissionRequest = async () => {
+async function handlePermissionRequest() {
   const hasPermission = await camera.requestPermission()
   if (hasPermission) {
     showPermissionHelp.value = false
     await camera.initialize()
-  } else {
+  }
+  else {
     showPermissionHelp.value = true
   }
 }
 
-const handlePermissionGranted = async () => {
+async function handlePermissionGranted() {
   showPermissionHelp.value = false
   await camera.initialize()
 }
 
 // Camera modal state
 const showCameraModal = ref(false)
-
 </script>
 
 <template>
@@ -140,7 +141,7 @@ const showCameraModal = ref(false)
           <!-- Device Selector -->
           <div class="flex items-center gap-2">
             <span class="text-sm text-muted-foreground font-medium">Device:</span>
-            <Select 
+            <Select
               :model-value="selectedDevice?.serial_number || ''"
               @update:model-value="handleDeviceSelect"
             >
@@ -148,7 +149,7 @@ const showCameraModal = ref(false)
                 <SelectValue placeholder="Select Device" />
               </SelectTrigger>
               <SelectContent class="bg-popover border-border">
-                <SelectItem 
+                <SelectItem
                   v-for="deviceItem in device.devices.value"
                   :key="deviceItem.serial_number"
                   :value="deviceItem.serial_number"
@@ -162,42 +163,41 @@ const showCameraModal = ref(false)
 
           <!-- Status -->
           <div class="flex items-center gap-2 text-sm">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span class="text-muted-foreground">{{ device.deviceStats.value.connected }} connected</span>
           </div>
 
           <!-- Actions -->
           <div class="flex items-center gap-2">
             <Button
-              @click="toggleDark()"
               variant="ghost"
               size="icon"
               class="text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 shadow-sm"
               title="Toggle theme"
+              @click="toggleDark()"
             >
               <Sun v-if="isDark" class="w-4 h-4" />
               <Moon v-else class="w-4 h-4" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               class="text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 shadow-sm"
               title="Settings"
             >
               <Settings class="w-4 h-4" />
             </Button>
             <Button
-              @click="device.refreshDevices"
               :disabled="device.isRefreshing.value"
               variant="ghost"
               size="icon"
               class="text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors bg-muted/30 hover:bg-muted/50 border border-border/30 hover:border-border/50 shadow-sm"
               title="Refresh devices"
+              @click="device.refreshDevices"
             >
-              <RefreshCw 
-                :class="[
-                  'w-4 h-4',
-                  device.isRefreshing.value ? 'animate-spin' : ''
+              <RefreshCw
+                class="w-4 h-4" :class="[
+                  device.isRefreshing.value ? 'animate-spin' : '',
                 ]"
               />
             </Button>
@@ -217,17 +217,21 @@ const showCameraModal = ref(false)
                 <Lightbulb class="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h2 class="font-semibold text-lg">{{ selectedDevice.device_type }}</h2>
-                <p class="text-sm text-muted-foreground">{{ selectedDevice.serial_number }}</p>
+                <h2 class="font-semibold text-lg">
+                  {{ selectedDevice.device_type }}
+                </h2>
+                <p class="text-sm text-muted-foreground">
+                  {{ selectedDevice.serial_number }}
+                </p>
               </div>
             </div>
             <div class="flex items-center gap-4">
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_connected ? 'bg-emerald-500' : 'bg-red-500'"></div>
+                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_connected ? 'bg-emerald-500' : 'bg-red-500'" />
                 <span class="text-sm text-muted-foreground">{{ selectedDevice.is_connected ? 'Connected' : 'Disconnected' }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_on ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'"></div>
+                <div class="w-2 h-2 rounded-full" :class="selectedDevice.is_on ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'" />
                 <span class="text-sm font-medium">{{ selectedDevice.is_on ? 'ON' : 'OFF' }}</span>
               </div>
             </div>
@@ -247,17 +251,17 @@ const showCameraModal = ref(false)
                 <span class="text-sm text-muted-foreground">Power State</span>
                 <Switch
                   :model-value="selectedDevice?.is_on || false"
-                  @update:model-value="handlePowerToggle"
                   :disabled="!selectedDevice?.is_connected || device.isPowerChanging.value"
                   class="data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted shadow-sm"
+                  @update:model-value="handlePowerToggle"
                 />
               </div>
               <div class="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
+                <input
                   id="camera-activate"
+                  type="checkbox"
                   class="w-4 h-4 rounded border bg-input border-border text-primary"
-                />
+                >
                 <label for="camera-activate" class="text-sm text-foreground">
                   Activate with camera
                 </label>
@@ -274,17 +278,19 @@ const showCameraModal = ref(false)
             <div class="space-y-4">
               <div class="text-center">
                 <span class="text-3xl font-bold text-primary">{{ selectedDevice.temperature_kelvin }}K</span>
-                <p class="text-sm text-muted-foreground">Color Temperature</p>
+                <p class="text-sm text-muted-foreground">
+                  Color Temperature
+                </p>
               </div>
               <div class="px-2">
                 <CustomSlider
                   :model-value="selectedDevice.temperature_kelvin"
-                  @update:model-value="handleTemperatureChange"
                   :min="selectedDevice.min_temperature_kelvin"
                   :max="selectedDevice.max_temperature_kelvin"
                   :step="100"
                   :disabled="!selectedDevice.is_on || device.isTemperatureChanging.value"
                   gradient-type="temperature"
+                  @update:model-value="handleTemperatureChange"
                 />
               </div>
               <div class="flex justify-between text-xs text-muted-foreground">
@@ -303,17 +309,19 @@ const showCameraModal = ref(false)
             <div class="space-y-4">
               <div class="text-center">
                 <span class="text-3xl font-bold text-primary">{{ brightnessPercentage }}%</span>
-                <p class="text-sm text-muted-foreground">Light Intensity</p>
+                <p class="text-sm text-muted-foreground">
+                  Light Intensity
+                </p>
               </div>
               <div class="px-2">
                 <CustomSlider
                   :model-value="selectedDevice.brightness_lumens"
-                  @update:model-value="handleBrightnessChange"
                   :min="selectedDevice.min_brightness_lumens"
                   :max="selectedDevice.max_brightness_lumens"
                   :step="1"
                   :disabled="!selectedDevice.is_on || device.isBrightnessChanging.value"
                   gradient-type="brightness"
+                  @update:model-value="handleBrightnessChange"
                 />
               </div>
               <div class="flex justify-between text-xs text-muted-foreground">
@@ -333,23 +341,23 @@ const showCameraModal = ref(false)
               <div class="flex items-center justify-between">
                 <span class="text-sm text-muted-foreground">Status</span>
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full" :class="camera.isStreaming.value ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'"></div>
+                  <div class="w-2 h-2 rounded-full" :class="camera.isStreaming.value ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'" />
                   <span class="text-sm font-medium">{{ camera.isStreaming.value ? 'Streaming' : 'Stopped' }}</span>
                 </div>
               </div>
-              
+
               <div v-if="camera.availableCameras.value.length > 0" class="space-y-2">
                 <label class="text-sm text-muted-foreground">Device</label>
-                <Select 
+                <Select
                   :model-value="camera.selectedCameraId.value"
-                  @update:model-value="handleCameraChange"
                   :disabled="camera.isStreaming.value"
+                  @update:model-value="handleCameraChange"
                 >
                   <SelectTrigger class="bg-input/50 border-border/50 hover:bg-input hover:border-border transition-colors">
                     <SelectValue placeholder="Select Camera" />
                   </SelectTrigger>
                   <SelectContent class="bg-popover border-border">
-                    <SelectItem 
+                    <SelectItem
                       v-for="cameraDevice in camera.availableCameras.value"
                       :key="cameraDevice.deviceId"
                       :value="cameraDevice.deviceId"
@@ -364,34 +372,36 @@ const showCameraModal = ref(false)
               <div class="flex gap-2">
                 <Button
                   v-if="!camera.isStreaming.value"
-                  @click="camera.availableCameras.value.length > 0 ? startCamera() : handlePermissionRequest()"
                   size="sm"
                   class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  @click="camera.availableCameras.value.length > 0 ? startCamera() : handlePermissionRequest()"
                 >
                   <Camera class="w-4 h-4 mr-2" />
                   {{ camera.availableCameras.value.length > 0 ? 'Start' : 'Enable' }}
                 </Button>
                 <Button
                   v-else
-                  @click="stopCamera"
                   size="sm"
                   variant="outline"
                   class="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  @click="stopCamera"
                 >
                   Stop
                 </Button>
                 <Button
-                  @click="showCameraModal = true"
                   size="sm"
                   variant="outline"
                   class="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  @click="showCameraModal = true"
                 >
                   Preview
                 </Button>
               </div>
 
               <div v-if="camera.error.value" class="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                <p class="text-sm text-destructive">{{ camera.error.value }}</p>
+                <p class="text-sm text-destructive">
+                  {{ camera.error.value }}
+                </p>
               </div>
             </div>
           </div>
@@ -404,7 +414,7 @@ const showCameraModal = ref(false)
             </h3>
             <div class="space-y-3">
               <div class="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
-                <div class="w-2 h-2 bg-primary rounded-full"></div>
+                <div class="w-2 h-2 bg-primary rounded-full" />
                 <span class="text-sm font-medium">Manual Control</span>
                 <ChevronDown class="w-4 h-4 ml-auto text-muted-foreground" />
               </div>
@@ -418,25 +428,27 @@ const showCameraModal = ref(false)
     </main>
 
     <!-- Camera Modal -->
-    <div 
+    <div
       v-if="showCameraModal && !camera.isLinux.value"
       class="fixed inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50"
       @click="showCameraModal = false"
     >
       <div class="bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 shadow-xl max-w-2xl w-full mx-4" @click.stop>
         <div class="p-4 border-b border-border/50 flex items-center justify-between">
-          <h3 class="text-lg font-semibold">Camera Preview</h3>
+          <h3 class="text-lg font-semibold">
+            Camera Preview
+          </h3>
           <Button
-            @click="showCameraModal = false"
             variant="ghost"
             size="icon"
             class="text-muted-foreground hover:text-foreground"
+            @click="showCameraModal = false"
           >
             <X class="w-4 h-4" />
           </Button>
         </div>
         <div class="p-4">
-          <CameraPreview 
+          <CameraPreview
             :video-ref="camera.videoRef"
             :is-streaming="camera.isStreaming.value"
             :error="camera.error.value"
@@ -447,25 +459,25 @@ const showCameraModal = ref(false)
 
     <!-- Mobile Menu Button -->
     <Button
-      @click="toggleSidebar"
       variant="ghost"
       size="icon"
       class="md:hidden fixed top-4 left-4 z-20 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm"
+      @click="toggleSidebar"
     >
       <Menu class="w-5 h-5" />
     </Button>
 
     <!-- Overlay for mobile -->
-    <div 
+    <div
       v-if="sidebarOpen"
-      @click="toggleSidebar"
       class="md:hidden fixed inset-0 bg-background/50 backdrop-blur-sm z-5"
-    ></div>
+      @click="toggleSidebar"
+    />
 
     <!-- Right Content Area -->
     <div class="flex-1 md:ml-72 lg:ml-80 flex items-center justify-center relative bg-gradient-to-br from-muted/20 to-muted/40 min-h-screen">
       <!-- Camera Preview -->
-      <CameraPreview 
+      <CameraPreview
         v-if="!camera.isLinux.value"
         :video-ref="camera.videoRef"
         :is-streaming="camera.isStreaming.value"
@@ -480,27 +492,33 @@ const showCameraModal = ref(false)
               <Camera class="w-8 h-8 text-primary" />
             </div>
             <div>
-              <p class="text-sm font-medium text-foreground">Camera Preview</p>
-              <p class="text-xs text-muted-foreground mt-1">Not available on Linux systems</p>
+              <p class="text-sm font-medium text-foreground">
+                Camera Preview
+              </p>
+              <p class="text-xs text-muted-foreground mt-1">
+                Not available on Linux systems
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div 
-        v-if="device.isDiscovering.value" 
+      <div
+        v-if="device.isDiscovering.value"
         class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm"
       >
         <div class="text-center space-y-3 bg-card/80 backdrop-blur-sm p-4 md:p-6 rounded-lg border border-border/50 mx-4 max-w-sm">
-          <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-sm text-muted-foreground">Discovering devices...</p>
+          <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p class="text-sm text-muted-foreground">
+            Discovering devices...
+          </p>
         </div>
       </div>
 
       <!-- No Devices State -->
-      <div 
-        v-if="!device.isDiscovering.value && device.devices.value.length === 0" 
+      <div
+        v-if="!device.isDiscovering.value && device.devices.value.length === 0"
         class="absolute inset-0 flex items-center justify-center"
       >
         <div class="text-center space-y-4 max-w-sm mx-4 md:max-w-md p-6 md:p-8 bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 shadow-lg">
@@ -508,14 +526,16 @@ const showCameraModal = ref(false)
             <Lightbulb class="w-12 h-12 md:w-16 md:h-16 text-primary" />
           </div>
           <div>
-            <h3 class="text-lg font-medium text-foreground">No devices found</h3>
+            <h3 class="text-lg font-medium text-foreground">
+              No devices found
+            </h3>
             <p class="text-sm mt-2 text-muted-foreground">
               Make sure your Litra devices are connected via USB and try refreshing.
             </p>
           </div>
           <Button
-            @click="device.refreshDevices"
             class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+            @click="device.refreshDevices"
           >
             Refresh Devices
           </Button>
@@ -524,19 +544,21 @@ const showCameraModal = ref(false)
     </div>
 
     <!-- Loading State -->
-    <div 
-      v-if="device.isDiscovering.value" 
+    <div
+      v-if="device.isDiscovering.value"
       class="fixed inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div class="text-center space-y-3 bg-card/80 backdrop-blur-sm p-6 rounded-lg border border-border/50 shadow-lg">
-        <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p class="text-sm text-muted-foreground">Discovering devices...</p>
+        <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        <p class="text-sm text-muted-foreground">
+          Discovering devices...
+        </p>
       </div>
     </div>
 
     <!-- No Devices State -->
-    <div 
-      v-if="!device.isDiscovering.value && device.devices.value.length === 0" 
+    <div
+      v-if="!device.isDiscovering.value && device.devices.value.length === 0"
       class="fixed inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div class="text-center space-y-4 max-w-md p-8 bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 shadow-lg">
@@ -544,14 +566,16 @@ const showCameraModal = ref(false)
           <Lightbulb class="w-16 h-16 text-primary" />
         </div>
         <div>
-          <h3 class="text-lg font-medium text-foreground">No devices found</h3>
+          <h3 class="text-lg font-medium text-foreground">
+            No devices found
+          </h3>
           <p class="text-sm mt-2 text-muted-foreground">
             Make sure your Litra devices are connected via USB and try refreshing.
           </p>
         </div>
         <Button
-          @click="device.refreshDevices"
           class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+          @click="device.refreshDevices"
         >
           Refresh Devices
         </Button>
@@ -559,7 +583,7 @@ const showCameraModal = ref(false)
     </div>
 
     <!-- Error Messages -->
-    <div 
+    <div
       v-if="device.hasError.value"
       class="fixed bottom-4 right-4 left-4 md:left-auto max-w-sm md:max-w-sm rounded-lg p-4 shadow-lg backdrop-blur-sm border bg-destructive/5 border-destructive/20 animate-in slide-in-from-bottom-2"
     >
@@ -576,10 +600,10 @@ const showCameraModal = ref(false)
           </p>
         </div>
         <Button
-          @click="device.clearMessages"
           variant="ghost"
           size="icon"
           class="h-auto w-auto p-1 text-destructive/60 hover:text-destructive"
+          @click="device.clearMessages"
         >
           <span class="text-sm">×</span>
         </Button>
@@ -587,7 +611,7 @@ const showCameraModal = ref(false)
     </div>
 
     <!-- Success Messages -->
-    <div 
+    <div
       v-if="device.hasSuccess.value"
       class="fixed bottom-4 right-4 left-4 md:left-auto max-w-sm md:max-w-sm rounded-lg p-4 shadow-lg backdrop-blur-sm border bg-emerald-500/10 border-emerald-500/20 animate-in slide-in-from-bottom-2"
     >
@@ -604,10 +628,10 @@ const showCameraModal = ref(false)
           </p>
         </div>
         <Button
-          @click="device.clearMessages"
           variant="ghost"
           size="icon"
           class="h-auto w-auto p-1 text-emerald-500/60 hover:text-emerald-600 dark:hover:text-emerald-400"
+          @click="device.clearMessages"
         >
           <span class="text-sm">×</span>
         </Button>

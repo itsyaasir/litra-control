@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { DropdownMenuContentEmits, DropdownMenuContentProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import {
   DropdownMenuContent,
-  type DropdownMenuContentEmits,
-  type DropdownMenuContentProps,
+
   DropdownMenuPortal,
   useForwardPropsEmits,
 } from 'reka-ui'

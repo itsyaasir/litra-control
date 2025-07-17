@@ -1,22 +1,22 @@
 /// Device store for managing Litra device state with Pinia.
-/// 
+///
 /// This store handles all device-related state management including device discovery,
 /// power control, brightness and temperature management, and UI operation states.
 
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
-import type { 
-  DeviceInfo, 
-  BrightnessInfo, 
-  TemperatureInfo, 
-  TemperaturePreset,
+import type {
   AppError,
+  BrightnessInfo,
+  DeviceFilters,
+  DeviceInfo,
   DeviceOperation,
-  OperationState,
   DeviceOperationState,
-  DeviceFilters
+  OperationState,
+  TemperatureInfo,
+  TemperaturePreset,
 } from '../types'
+import { invoke } from '@tauri-apps/api/core'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useDeviceStore = defineStore('device', () => {
   // State
@@ -28,26 +28,26 @@ export const useDeviceStore = defineStore('device', () => {
     connectionStatus: 'all',
     powerState: 'all',
     sortBy: 'name',
-    sortDirection: 'asc'
+    sortDirection: 'asc',
   })
   const autoRefreshEnabled = ref(true)
   const autoRefreshInterval = ref<number | null>(null)
 
   // Computed
-  const connectedDevices = computed(() => 
-    devices.value.filter(device => device.is_connected)
+  const connectedDevices = computed(() =>
+    devices.value.filter(device => device.is_connected),
   )
 
-  const disconnectedDevices = computed(() => 
-    devices.value.filter(device => !device.is_connected)
+  const disconnectedDevices = computed(() =>
+    devices.value.filter(device => !device.is_connected),
   )
 
-  const poweredOnDevices = computed(() => 
-    devices.value.filter(device => device.is_on)
+  const poweredOnDevices = computed(() =>
+    devices.value.filter(device => device.is_on),
   )
 
-  const selectedDevice = computed(() => 
-    devices.value.find(device => device.serial_number === selectedDeviceSerial.value) || null
+  const selectedDevice = computed(() =>
+    devices.value.find(device => device.serial_number === selectedDeviceSerial.value) || null,
   )
 
   const filteredDevices = computed(() => {
@@ -59,21 +59,21 @@ export const useDeviceStore = defineStore('device', () => {
     }
 
     if (filters.value.connectionStatus !== 'all') {
-      filtered = filtered.filter(device => 
-        filters.value.connectionStatus === 'connected' ? device.is_connected : !device.is_connected
+      filtered = filtered.filter(device =>
+        filters.value.connectionStatus === 'connected' ? device.is_connected : !device.is_connected,
       )
     }
 
     if (filters.value.powerState !== 'all') {
-      filtered = filtered.filter(device => 
-        filters.value.powerState === 'on' ? device.is_on : !device.is_on
+      filtered = filtered.filter(device =>
+        filters.value.powerState === 'on' ? device.is_on : !device.is_on,
       )
     }
 
     // Apply sorting
     filtered.sort((a, b) => {
       const direction = filters.value.sortDirection === 'asc' ? 1 : -1
-      
+
       switch (filters.value.sortBy) {
         case 'name':
           return direction * a.device_type.localeCompare(b.device_type)
@@ -96,7 +96,7 @@ export const useDeviceStore = defineStore('device', () => {
     connected: connectedDevices.value.length,
     disconnected: disconnectedDevices.value.length,
     poweredOn: poweredOnDevices.value.length,
-    poweredOff: devices.value.length - poweredOnDevices.value.length
+    poweredOff: devices.value.length - poweredOnDevices.value.length,
   }))
 
   // Helper functions
@@ -104,14 +104,14 @@ export const useDeviceStore = defineStore('device', () => {
     return operationStates.value[serialNumber]?.[operation] || {
       loading: false,
       error: null,
-      success: null
+      success: null,
     }
   }
 
   const setOperationState = (
-    serialNumber: string, 
-    operation: DeviceOperation, 
-    state: Partial<OperationState>
+    serialNumber: string,
+    operation: DeviceOperation,
+    state: Partial<OperationState>,
   ) => {
     if (!operationStates.value[serialNumber]) {
       operationStates.value[serialNumber] = {}
@@ -120,7 +120,7 @@ export const useDeviceStore = defineStore('device', () => {
       operationStates.value[serialNumber][operation] = {
         loading: false,
         error: null,
-        success: null
+        success: null,
       }
     }
     Object.assign(operationStates.value[serialNumber][operation]!, state)
@@ -130,7 +130,7 @@ export const useDeviceStore = defineStore('device', () => {
     setOperationState(serialNumber, operation, {
       loading: false,
       error: null,
-      success: null
+      success: null,
     })
   }
 
@@ -138,19 +138,20 @@ export const useDeviceStore = defineStore('device', () => {
   const discoverDevices = async (): Promise<void> => {
     try {
       setOperationState('global', 'discovery', { loading: true, error: null })
-      
+
       const discoveredDevices = await invoke<DeviceInfo[]>('discover_devices')
       devices.value = discoveredDevices
-      
-      setOperationState('global', 'discovery', { 
-        loading: false, 
-        success: `Discovered ${discoveredDevices.length} device(s)` 
+
+      setOperationState('global', 'discovery', {
+        loading: false,
+        success: `Discovered ${discoveredDevices.length} device(s)`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState('global', 'discovery', { 
-        loading: false, 
-        error: appError 
+      setOperationState('global', 'discovery', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -159,19 +160,20 @@ export const useDeviceStore = defineStore('device', () => {
   const refreshDevices = async (): Promise<void> => {
     try {
       setOperationState('global', 'refresh', { loading: true, error: null })
-      
+
       await invoke('refresh_devices')
       await discoverDevices()
-      
-      setOperationState('global', 'refresh', { 
-        loading: false, 
-        success: 'Devices refreshed successfully' 
+
+      setOperationState('global', 'refresh', {
+        loading: false,
+        success: 'Devices refreshed successfully',
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState('global', 'refresh', { 
-        loading: false, 
-        error: appError 
+      setOperationState('global', 'refresh', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -180,15 +182,16 @@ export const useDeviceStore = defineStore('device', () => {
   const getDeviceInfo = async (serialNumber: string): Promise<DeviceInfo> => {
     try {
       const deviceInfo = await invoke<DeviceInfo>('get_device_info', { serialNumber })
-      
+
       // Update the device in our store
       const index = devices.value.findIndex(d => d.serial_number === serialNumber)
       if (index >= 0) {
         devices.value[index] = deviceInfo
       }
-      
+
       return deviceInfo
-    } catch (error) {
+    }
+    catch (error) {
       throw error as AppError
     }
   }
@@ -197,24 +200,25 @@ export const useDeviceStore = defineStore('device', () => {
   const setPowerState = async (serialNumber: string, powerOn: boolean): Promise<void> => {
     try {
       setOperationState(serialNumber, 'power', { loading: true, error: null })
-      
+
       await invoke('set_device_power', { serialNumber, powerOn })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
         device.is_on = powerOn
       }
-      
-      setOperationState(serialNumber, 'power', { 
-        loading: false, 
-        success: `Device ${powerOn ? 'turned on' : 'turned off'} successfully` 
+
+      setOperationState(serialNumber, 'power', {
+        loading: false,
+        success: `Device ${powerOn ? 'turned on' : 'turned off'} successfully`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'power', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'power', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -223,26 +227,27 @@ export const useDeviceStore = defineStore('device', () => {
   const togglePower = async (serialNumber: string): Promise<boolean> => {
     try {
       setOperationState(serialNumber, 'power', { loading: true, error: null })
-      
+
       const newState = await invoke<boolean>('device_power_toggle', { serialNumber })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
         device.is_on = newState
       }
-      
-      setOperationState(serialNumber, 'power', { 
-        loading: false, 
-        success: `Device ${newState ? 'turned on' : 'turned off'} successfully` 
+
+      setOperationState(serialNumber, 'power', {
+        loading: false,
+        success: `Device ${newState ? 'turned on' : 'turned off'} successfully`,
       })
-      
+
       return newState
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'power', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'power', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -252,9 +257,9 @@ export const useDeviceStore = defineStore('device', () => {
   const setBrightness = async (serialNumber: string, lumens: number): Promise<void> => {
     try {
       setOperationState(serialNumber, 'brightness', { loading: true, error: null })
-      
+
       await invoke('set_device_brightness', { serialNumber, lumens })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
@@ -262,19 +267,20 @@ export const useDeviceStore = defineStore('device', () => {
         // Recalculate percentage
         const range = device.max_brightness_lumens - device.min_brightness_lumens
         device.brightness_percentage = Math.round(
-          ((lumens - device.min_brightness_lumens) / range) * 100
+          ((lumens - device.min_brightness_lumens) / range) * 100,
         )
       }
-      
-      setOperationState(serialNumber, 'brightness', { 
-        loading: false, 
-        success: `Brightness set to ${lumens} lumens` 
+
+      setOperationState(serialNumber, 'brightness', {
+        loading: false,
+        success: `Brightness set to ${lumens} lumens`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'brightness', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'brightness', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -283,9 +289,9 @@ export const useDeviceStore = defineStore('device', () => {
   const setBrightnessPercentage = async (serialNumber: string, percentage: number): Promise<void> => {
     try {
       setOperationState(serialNumber, 'brightness', { loading: true, error: null })
-      
+
       await invoke('set_device_brightness_percentage', { serialNumber, percentage })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
@@ -293,19 +299,20 @@ export const useDeviceStore = defineStore('device', () => {
         // Recalculate lumens
         const range = device.max_brightness_lumens - device.min_brightness_lumens
         device.brightness_lumens = Math.round(
-          device.min_brightness_lumens + (range * percentage / 100)
+          device.min_brightness_lumens + (range * percentage / 100),
         )
       }
-      
-      setOperationState(serialNumber, 'brightness', { 
-        loading: false, 
-        success: `Brightness set to ${percentage}%` 
+
+      setOperationState(serialNumber, 'brightness', {
+        loading: false,
+        success: `Brightness set to ${percentage}%`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'brightness', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'brightness', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -314,7 +321,8 @@ export const useDeviceStore = defineStore('device', () => {
   const getBrightnessInfo = async (serialNumber: string): Promise<BrightnessInfo> => {
     try {
       return await invoke<BrightnessInfo>('get_device_brightness', { serialNumber })
-    } catch (error) {
+    }
+    catch (error) {
       throw error as AppError
     }
   }
@@ -323,24 +331,25 @@ export const useDeviceStore = defineStore('device', () => {
   const setTemperature = async (serialNumber: string, kelvin: number): Promise<void> => {
     try {
       setOperationState(serialNumber, 'temperature', { loading: true, error: null })
-      
+
       await invoke('set_device_temperature', { serialNumber, kelvin })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
         device.temperature_kelvin = kelvin
       }
-      
-      setOperationState(serialNumber, 'temperature', { 
-        loading: false, 
-        success: `Temperature set to ${kelvin}K` 
+
+      setOperationState(serialNumber, 'temperature', {
+        loading: false,
+        success: `Temperature set to ${kelvin}K`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'temperature', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'temperature', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -349,27 +358,28 @@ export const useDeviceStore = defineStore('device', () => {
   const setTemperaturePreset = async (serialNumber: string, preset: string): Promise<void> => {
     try {
       setOperationState(serialNumber, 'temperature', { loading: true, error: null })
-      
-      const actualTemp = await invoke<number>('set_device_temperature_preset', { 
-        serialNumber, 
-        preset 
+
+      const actualTemp = await invoke<number>('set_device_temperature_preset', {
+        serialNumber,
+        preset,
       })
-      
+
       // Update device state locally
       const device = devices.value.find(d => d.serial_number === serialNumber)
       if (device) {
         device.temperature_kelvin = actualTemp
       }
-      
-      setOperationState(serialNumber, 'temperature', { 
-        loading: false, 
-        success: `Temperature set to ${preset} (${actualTemp}K)` 
+
+      setOperationState(serialNumber, 'temperature', {
+        loading: false,
+        success: `Temperature set to ${preset} (${actualTemp}K)`,
       })
-    } catch (error) {
+    }
+    catch (error) {
       const appError = error as AppError
-      setOperationState(serialNumber, 'temperature', { 
-        loading: false, 
-        error: appError 
+      setOperationState(serialNumber, 'temperature', {
+        loading: false,
+        error: appError,
       })
       throw error
     }
@@ -378,7 +388,8 @@ export const useDeviceStore = defineStore('device', () => {
   const getTemperatureInfo = async (serialNumber: string): Promise<TemperatureInfo> => {
     try {
       return await invoke<TemperatureInfo>('get_device_temperature', { serialNumber })
-    } catch (error) {
+    }
+    catch (error) {
       throw error as AppError
     }
   }
@@ -387,7 +398,8 @@ export const useDeviceStore = defineStore('device', () => {
     try {
       const presets = await invoke<TemperaturePreset[]>('get_temperature_presets')
       temperaturePresets.value = presets
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to load temperature presets:', error)
     }
   }
@@ -430,7 +442,7 @@ export const useDeviceStore = defineStore('device', () => {
       connectionStatus: 'all',
       powerState: 'all',
       sortBy: 'name',
-      sortDirection: 'asc'
+      sortDirection: 'asc',
     }
   }
 
@@ -475,6 +487,6 @@ export const useDeviceStore = defineStore('device', () => {
     selectDevice,
     selectFirstDevice,
     setFilters,
-    resetFilters
+    resetFilters,
   }
 })

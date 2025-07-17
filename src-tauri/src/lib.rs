@@ -1,8 +1,7 @@
 /// Litra Control - A modern desktop application for controlling Logitech Litra devices.
-/// 
+///
 /// This application provides a comprehensive interface for managing Litra devices,
 /// including power control, brightness adjustment, and temperature settings.
-
 // Module declarations
 mod commands;
 mod device;
@@ -16,7 +15,7 @@ pub use error::{AppError, AppResult};
 use std::sync::Mutex;
 
 /// Initializes and runs the Tauri application.
-/// 
+///
 /// This function sets up the application state, registers command handlers,
 /// and starts the main event loop.
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -25,7 +24,7 @@ pub fn run() {
     let device_manager: DeviceManagerState = match DeviceManager::new() {
         Ok(manager) => Mutex::new(manager),
         Err(e) => {
-            eprintln!("Failed to initialize device manager: {}", e);
+            eprintln!("Failed to initialize device manager: {e}");
             std::process::exit(1);
         }
     };
