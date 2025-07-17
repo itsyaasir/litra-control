@@ -47,7 +47,8 @@ jobs:
             libxdo-dev \
             libssl-dev \
             libayatana-appindicator3-dev \
-            librsvg2-dev
+            librsvg2-dev \
+            libudev-dev
 
       - name: Cache dependencies
         uses: actions/cache@v3

@@ -43,6 +43,9 @@
     "longDescription": "Litra Control is a modern desktop application for controlling Logitech Litra lighting devices. Features include brightness and temperature adjustment, lighting presets, and automatic camera activation.",
     "linux": {
       "deb": {
+        "depends": [
+          "libudev1"
+        ],
         "postInstallScript": "./scripts/postinst",
         "preRemoveScript": "./scripts/prerm",
         "files": {
@@ -51,6 +54,9 @@
         "desktopTemplate": "./scripts/litra-control.desktop"
       },
       "rpm": {
+        "depends": [
+          "systemd-udev"
+        ],
         "postInstallScript": "./scripts/postinst",
         "preRemoveScript": "./scripts/prerm",
         "files": {
