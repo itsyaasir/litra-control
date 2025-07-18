@@ -52,7 +52,7 @@ jobs:
             libgtk-3-dev \
             libgdk-pixbuf2.0-dev \
             libpango1.0-dev \
-            libatk1.0-dev \gi
+            libatk1.0-dev \
             libcairo-gobject2 \
             libgtk-3-0 \
             libwebkit2gtk-4.1-0 \
