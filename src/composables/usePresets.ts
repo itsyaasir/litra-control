@@ -102,8 +102,9 @@ export function usePresets() {
 
   // Apply preset
   const applyPreset = async (preset: Preset) => {
-    if (!device.selectedDevice.value)
-      return
+    if (!device.selectedDevice.value) {
+      throw new Error('No device selected')
+    }
 
     manuallySelectedPreset.value = preset.id
     showPresetDropdown.value = false
@@ -112,16 +113,11 @@ export function usePresets() {
     const brightnessRange = device.selectedDevice.value.max_brightness_lumens - device.selectedDevice.value.min_brightness_lumens
     const targetLumens = Math.round(device.selectedDevice.value.min_brightness_lumens + (brightnessRange * preset.brightness / 100))
 
-    try {
-      // Apply temperature
-      await device.setTemperatureInKelvin(preset.temperature)
+    // Apply temperature
+    await device.setTemperatureInKelvin(preset.temperature)
 
-      // Apply brightness
-      await device.setBrightnessInLumen(targetLumens)
-    }
-    catch (error) {
-      console.error('Failed to apply preset:', error)
-    }
+    // Apply brightness
+    await device.setBrightnessInLumen(targetLumens)
   }
 
   // Set manual mode

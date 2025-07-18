@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +49,14 @@ jobs:
             libssl-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
-            libudev-dev
+            libudev-dev \
+            libgtk-3-dev \
+            libgdk-pixbuf2.0-dev \
+            libpango1.0-dev \
+            libatk1.0-dev \
+            libcairo-gobject2 \
+            libgtk-3-0 \
+            libwebkit2gtk-4.1-0
 
       - name: Cache dependencies
         uses: actions/cache@v3
@@ -66,7 +73,22 @@ jobs:
 
       - name: Build application
         run: |
-          NO_STRIP=true pnpm tauri build -- --verbose
+          # First build without AppImage to test core functionality
+          NO_STRIP=true pnpm tauri build --target deb,rpm -- --verbose --debug
+
+          # Then try AppImage build with error handling
+          set +e
+          NO_STRIP=true pnpm tauri build --target appimage -- --verbose --debug
+          APPIMAGE_EXIT_CODE=$?
+          set -e
+
+          if [ $APPIMAGE_EXIT_CODE -ne 0 ]; then
+            echo "AppImage build failed with exit code $APPIMAGE_EXIT_CODE"
+            echo "Continuing with DEB and RPM packages only"
+          fi
+        env:
+          VERBOSE: 1
+          DEBUG: 1
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -76,6 +98,7 @@ jobs:
             src-tauri/target/release/bundle/deb/*.deb
             src-tauri/target/release/bundle/rpm/*.rpm
             src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: ignore
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')

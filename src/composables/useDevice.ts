@@ -4,7 +4,7 @@
 /// with automatic error handling and state management.
 
 import type { DeviceOperation } from '../types'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useDeviceStore } from '../stores'
 
 /**
@@ -17,8 +17,6 @@ export function useDevice(serialNumber?: string) {
   const deviceStore = useDeviceStore()
 
   // Local reactive state
-  const localError = ref<string | null>(null)
-  const localSuccess = ref<string | null>(null)
 
   const devices = computed(() => deviceStore.devices)
   const selectedDevice = computed(() => deviceStore.selectedDevice)
@@ -59,69 +57,15 @@ export function useDevice(serialNumber?: string) {
     device.value ? getDeviceOperationState('temperature').loading : false,
   )
 
-  // Error and success states
-  const hasError = computed(() =>
-    localError.value !== null
-    || deviceStore.getOperationState('global', 'discovery').error !== null
-    || deviceStore.getOperationState('global', 'refresh').error !== null
-    || (device.value && Object.values(['power', 'brightness', 'temperature'] as const)
-      .some(op => getDeviceOperationState(op).error !== null)),
-  )
-
-  const hasSuccess = computed(() =>
-    localSuccess.value !== null
-    || deviceStore.getOperationState('global', 'discovery').success !== null
-    || deviceStore.getOperationState('global', 'refresh').success !== null
-    || (device.value && Object.values(['power', 'brightness', 'temperature'] as const)
-      .some(op => getDeviceOperationState(op).success !== null)),
-  )
-
   // Utility functions
-  const clearMessages = () => {
-    localError.value = null
-    localSuccess.value = null
-
-    if (device.value) {
-      ['power', 'brightness', 'temperature'].forEach((op) => {
-        deviceStore.clearOperationState(device.value!.serial_number, op as DeviceOperation)
-      })
-    }
-
-    deviceStore.clearOperationState('global', 'discovery')
-    deviceStore.clearOperationState('global', 'refresh')
-  }
-
-  const showSuccess = (message: string) => {
-    localSuccess.value = message
-    setTimeout(() => {
-      localSuccess.value = null
-    }, 3000)
-  }
-
-  const showError = (message: string) => {
-    localError.value = message
-    setTimeout(() => {
-      localError.value = null
-    }, 5000)
-  }
 
   // Device operations
   const discoverDevices = async () => {
-    try {
-      await deviceStore.discoverDevices()
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to discover devices')
-    }
+    await deviceStore.discoverDevices()
   }
 
   const refreshDevices = async () => {
-    try {
-      await deviceStore.refreshDevices()
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to refresh devices')
-    }
+    await deviceStore.refreshDevices()
   }
 
   const selectDevice = (serialNumber: string | null) => {
@@ -135,116 +79,78 @@ export function useDevice(serialNumber?: string) {
   // Power operations
   const setPowerState = async (powerOn: boolean, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
-
-    try {
-      await deviceStore.setPowerState(serial, powerOn)
-    }
-    catch (error: any) {
-      showError(error.message || `Failed to ${powerOn ? 'turn on' : 'turn off'} device`)
-    }
+    await deviceStore.setPowerState(serial, powerOn)
   }
 
   const togglePower = async (targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
-
-    try {
-      await deviceStore.togglePower(serial)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to toggle device power')
-    }
+    await deviceStore.togglePower(serial)
   }
 
   // Brightness operations
   const setBrightness = async (lumens: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
 
-    try {
-      await deviceStore.setBrightness(serial, lumens)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to set brightness')
-    }
+    await deviceStore.setBrightness(serial, lumens)
   }
 
   const setBrightnessPercentage = async (percentage: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
 
-    try {
-      await deviceStore.setBrightnessPercentage(serial, percentage)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to set brightness')
-    }
+    await deviceStore.setBrightnessPercentage(serial, percentage)
   }
 
   // Temperature operations
   const setTemperature = async (kelvin: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
 
-    try {
-      await deviceStore.setTemperature(serial, kelvin)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to set temperature')
-    }
+    await deviceStore.setTemperature(serial, kelvin)
   }
 
   const setTemperatureInKelvin = async (kelvin: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
 
-    try {
-      await deviceStore.setTemperatureInKelvin(serial, kelvin)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to set temperature')
-    }
+    await deviceStore.setTemperatureInKelvin(serial, kelvin)
   }
 
   const setBrightnessInLumen = async (lumens: number, targetSerial?: string) => {
     if (!device.value && !targetSerial) {
-      showError('No device selected')
-      return
+      throw new Error('No device selected')
     }
 
     const serial = targetSerial || device.value!.serial_number
 
-    try {
-      await deviceStore.setBrightnessInLumen(serial, lumens)
-    }
-    catch (error: any) {
-      showError(error.message || 'Failed to set brightness')
-    }
+    await deviceStore.setBrightnessInLumen(serial, lumens)
+  }
+
+  // Event handler for camera auto-toggle events
+  const handleCameraDeviceChange = () => {
+    // Refresh devices to get updated power states
+    refreshDevices()
   }
 
   // Lifecycle
@@ -256,6 +162,16 @@ export function useDevice(serialNumber?: string) {
     if (!deviceStore.selectedDeviceSerial && deviceStore.devices.length > 0) {
       selectFirstDevice()
     }
+
+    // Listen for camera auto-toggle events to refresh device state
+    window.addEventListener('camera-device-activated', handleCameraDeviceChange)
+    window.addEventListener('camera-device-deactivated', handleCameraDeviceChange)
+  })
+
+  onUnmounted(() => {
+    // Cleanup event listeners
+    window.removeEventListener('camera-device-activated', handleCameraDeviceChange)
+    window.removeEventListener('camera-device-deactivated', handleCameraDeviceChange)
   })
 
   return {
@@ -271,17 +187,6 @@ export function useDevice(serialNumber?: string) {
     isPowerChanging,
     isBrightnessChanging,
     isTemperatureChanging,
-
-    // Error and success states
-    hasError,
-    hasSuccess,
-    localError,
-    localSuccess,
-
-    // Utility functions
-    clearMessages,
-    showSuccess,
-    showError,
 
     // Device operations
     discoverDevices,

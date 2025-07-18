@@ -1,4 +1,4 @@
-/// Device manager implementation for handling Litra device operations.
+//! Device manager implementation for handling Litra device operations.
 use super::types::DeviceInfo;
 use crate::error::{device_communication_error, device_not_found_error, AppError, AppResult};
 use litra::Litra;
@@ -104,17 +104,17 @@ impl DeviceManager {
         })?;
 
         // Query current device state
-        let is_on = handle.is_on().map_err(|e| {
-            device_communication_error(&format!("Failed to get power state: {e}"))
-        })?;
+        let is_on = handle
+            .is_on()
+            .map_err(|e| device_communication_error(&format!("Failed to get power state: {e}")))?;
 
         let brightness_lumens = handle
             .brightness_in_lumen()
             .map_err(|e| device_communication_error(&format!("Failed to get brightness: {e}")))?;
 
-        let temperature_kelvin = handle.temperature_in_kelvin().map_err(|e| {
-            device_communication_error(&format!("Failed to get temperature: {e}"))
-        })?;
+        let temperature_kelvin = handle
+            .temperature_in_kelvin()
+            .map_err(|e| device_communication_error(&format!("Failed to get temperature: {e}")))?;
 
         // Get device capabilities
         let min_brightness = handle.minimum_brightness_in_lumen();

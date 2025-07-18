@@ -19,7 +19,7 @@ async function maximizeWindow() {
 }
 
 async function closeWindow() {
-  await appWindow.close()
+  await appWindow.hide()
 }
 
 // Check if window is maximized
@@ -43,7 +43,7 @@ onMounted(() => {
       <!-- Left side - App info -->
       <div class="titlebar-left">
         <div class="flex items-center gap-2">
-          <LitraLogo :size="20" class="shadow-sm" />
+          <LitraLogo :size="20" />
           <span class="text-sm font-semibold text-foreground">
             Litra Control
           </span>
@@ -86,10 +86,11 @@ onMounted(() => {
 <style scoped>
 @reference "../index.css";
 .custom-titlebar {
-  @apply bg-card border-b border-border/50 shadow-sm flex-shrink-0 select-none;
+  @apply bg-background flex-shrink-0 select-none;
   height: 32px;
   width: 100%;
   position: relative;
+  z-index: 1000;
 }
 
 .titlebar-content {

@@ -65,6 +65,7 @@
         "desktopTemplate": "./scripts/litra-control.desktop"
       },
       "appimage": {
+        "bundleMediaFramework": false
       }
     }
   }
