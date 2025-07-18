@@ -66,6 +66,13 @@
           "/etc/udev/rules.d/99-litra-control.rules": "./scripts/99-litra-control.rules"
         },
         "desktopTemplate": "./scripts/litra-control.desktop"
+      },
+      "appimage": {
+        "bundleMediaFramework": false,
+        "files": {
+          "/etc/udev/rules.d/99-litra-control.rules": "./scripts/99-litra-control.rules",
+          "/usr/share/icons/hicolor/128x128/apps/litra-control.png": "./icons/128x128.png"
+        }
       }
     }
 
