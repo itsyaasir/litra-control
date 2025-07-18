@@ -73,19 +73,7 @@ jobs:
 
       - name: Build application
         run: |
-          # First build without AppImage to test core functionality
-          NO_STRIP=true pnpm tauri build --target deb,rpm -- --verbose --debug
-
-          # Then try AppImage build with error handling
-          set +e
-          NO_STRIP=true pnpm tauri build --target appimage -- --verbose --debug
-          APPIMAGE_EXIT_CODE=$?
-          set -e
-
-          if [ $APPIMAGE_EXIT_CODE -ne 0 ]; then
-            echo "AppImage build failed with exit code $APPIMAGE_EXIT_CODE"
-            echo "Continuing with DEB and RPM packages only"
-          fi
+          NO_STRIP=true pnpm tauri build
         env:
           VERBOSE: 1
           DEBUG: 1
