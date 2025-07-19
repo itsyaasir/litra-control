@@ -9,6 +9,17 @@
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
+  "plugins": {
+    "cli": {
+      "description": "Professional lighting control for Logitech Litra devices",
+      "args": [
+        {
+          "name": "minimized",
+          "description": "Start the application minimized"
+        }
+      ]
+    }
+  },
   "app": {
     "withGlobalTauri": true,
     "windows": [

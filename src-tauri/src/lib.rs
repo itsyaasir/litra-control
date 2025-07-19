@@ -4,6 +4,7 @@
 //! including power control, brightness adjustment, and temperature settings.
 
 mod camera_monitor;
+mod cli;
 mod commands;
 pub mod config;
 mod device;
@@ -70,6 +71,7 @@ pub fn run() {
     let app_state = AppState::new();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_cli::init())
         .setup(|app| {
             // Setup system tray
             tauri::async_runtime::block_on(async {
@@ -77,6 +79,11 @@ pub fn run() {
                     .await
                     .expect("Failed to setup tray");
             });
+
+            // Handle CLI args
+            if let Err(e) = crate::cli::handle_cli_args(app) {
+                eprintln!("Error handling CLI args: {e}");
+            }
 
             Ok(())
         })
