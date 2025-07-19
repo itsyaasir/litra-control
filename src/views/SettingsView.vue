@@ -306,7 +306,10 @@ onMounted(async () => {
           </div>
 
           <Badge :variant="monitoringStatus.badge as any">
-            <div class="w-2 h-2 rounded-full mr-2" :class="monitoringStatus.color" />
+            <div
+              class="w-2 h-2 rounded-full mr-2"
+              :class="monitoringStatus.color"
+            />
             {{ monitoringStatus.text }}
           </Badge>
         </div>
@@ -357,7 +360,10 @@ onMounted(async () => {
                     </div>
                   </div>
                   <div class="text-center p-3 bg-muted/50 rounded-lg">
-                    <div class="text-2xl font-bold" :class="cameraMonitor.isMonitoring.value ? 'text-emerald-600' : 'text-gray-500'">
+                    <div
+                      class="text-2xl font-bold"
+                      :class="cameraMonitor.isMonitoring.value ? 'text-emerald-600' : 'text-gray-500'"
+                    >
                       {{ cameraMonitor.isMonitoring.value ? 'ON' : 'OFF' }}
                     </div>
                     <div class="text-sm text-muted-foreground">
@@ -419,9 +425,11 @@ onMounted(async () => {
                       v-for="theme in themeOptions"
                       :key="theme.value"
                       class="relative flex flex-col items-center gap-2 p-3 rounded-lg border transition-all cursor-pointer"
-                      :class="colorMode === theme.value
+                      :class="
+                        colorMode === theme.value
                         ? 'bg-primary/10 border-primary text-primary'
-                        : 'bg-muted/30 border-border hover:bg-muted/50 hover:border-border/80'"
+                        : 'bg-muted/30 border-border hover:bg-muted/50 hover:border-border/80'
+                      "
                       @click="colorMode = theme.value as any"
                     >
                       <component
@@ -443,15 +451,18 @@ onMounted(async () => {
                   Camera Auto-Toggle
                 </CardTitle>
                 <CardDescription>
-                  Automatically control Litra devices when camera activity is detected
+                  Automatically control Litra devices when camera activity is
+                  detected
                 </CardDescription>
               </CardHeader>
               <CardContent class="space-y-4">
                 <div class="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                   <div>
-                    <Label class="text-base font-medium">Enable Camera Auto-Toggle</Label>
+                    <Label class="text-base font-medium"
+                    >Enable Camera Auto-Toggle</Label>
                     <p class="text-sm text-muted-foreground mt-1">
-                      Turn on lights when camera is detected, turn off when no camera activity
+                      Turn on lights when camera is detected, turn off when no
+                      camera activity
                     </p>
                   </div>
                   <Switch
@@ -491,7 +502,9 @@ onMounted(async () => {
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select strategy">
-                      {{ strategies.find(s => s.value === (typeof localConfig.strategy === 'string' ? localConfig.strategy : 'SelectedDevice'))?.label || 'Select strategy' }}
+                      {{
+                        strategies.find(s => s.value === (typeof localConfig.strategy === 'string' ? localConfig.strategy : 'SelectedDevice'))?.label || 'Select strategy'
+                      }}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -513,7 +526,10 @@ onMounted(async () => {
                 </Select>
 
                 <!-- Selected Device Configuration -->
-                <div v-if="typeof localConfig.strategy === 'object' && 'SelectedDevice' in localConfig.strategy" class="space-y-3">
+                <div
+                  v-if="typeof localConfig.strategy === 'object' && 'SelectedDevice' in localConfig.strategy"
+                  class="space-y-3"
+                >
                   <Label>Select Device</Label>
                   <Select
                     :model-value="(typeof localConfig.strategy === 'object' && 'SelectedDevice' in localConfig.strategy) ? localConfig.strategy.SelectedDevice.serialNumber : ''"
@@ -529,7 +545,9 @@ onMounted(async () => {
                         :key="deviceItem.serial_number"
                         :value="deviceItem.serial_number"
                       >
-                        {{ deviceItem.device_type }} ({{ deviceItem.serial_number }})
+                        {{ deviceItem.device_type }} ({{
+                          deviceItem.serial_number
+                        }})
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -559,7 +577,8 @@ onMounted(async () => {
                       @update:model-value="(value: any) => localConfig.debounceMs = parseInt(String(value)) || 3000"
                     />
                     <p class="text-xs text-muted-foreground">
-                      Delay before turning off devices when no cameras are detected
+                      Delay before turning off devices when no cameras are
+                      detected
                     </p>
                   </div>
                 </div>
@@ -582,7 +601,9 @@ onMounted(async () => {
                   <div>
                     <strong>Last Refresh:</strong>
                     <div class="text-muted-foreground">
-                      {{ debugInfo.lastRefresh ? debugInfo.lastRefresh.toLocaleTimeString() : 'Never' }}
+                      {{
+                        debugInfo.lastRefresh ? debugInfo.lastRefresh.toLocaleTimeString() : 'Never'
+                      }}
                     </div>
                   </div>
 

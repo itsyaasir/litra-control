@@ -182,7 +182,8 @@ onUnmounted(() => {
         <div class="flex items-center gap-3">
           <!-- Device Selector -->
           <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground font-medium">Device:</span>
+            <span class="text-sm text-muted-foreground font-medium"
+            >Device:</span>
             <Select
               :model-value="selectedDevice?.serial_number || ''"
               @update:model-value="handleDeviceSelect"
@@ -209,15 +210,18 @@ onUnmounted(() => {
           <div class="flex items-center gap-2 text-sm">
             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span class="text-muted-foreground">{{
-              device.deviceStats.value.connected
-            }} connected</span>
+                device.deviceStats.value.connected
+              }} connected</span>
           </div>
         </div>
 
         <!-- Right: Controls -->
         <div class="flex items-center gap-3">
           <!-- Camera Monitor Status -->
-          <div v-if="cameraMonitor.isMonitoring.value" class="flex items-center gap-2 text-sm">
+          <div
+            v-if="cameraMonitor.isMonitoring.value"
+            class="flex items-center gap-2 text-sm"
+          >
             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
             <span class="text-muted-foreground">Camera monitoring</span>
           </div>
@@ -342,15 +346,17 @@ onUnmounted(() => {
                     :model-value="cameraMonitor.isEnabled.value"
                     :disabled="cameraMonitor.state.value.isLoading"
                     class="data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted shadow-sm"
-                    @update:model-value="async (checked) => {
-                      if (checked) {
-                        await cameraMonitor.startMonitoring()
+                    @update:model-value="
+                      async (checked) => {
+                        if (checked) {
+                          await cameraMonitor.startMonitoring()
+                        }
+                        else {
+                          await cameraMonitor.stopMonitoring()
+                        }
+                        await cameraMonitor.updateConfig({ enabled: checked })
                       }
-                      else {
-                        await cameraMonitor.stopMonitoring()
-                      }
-                      await cameraMonitor.updateConfig({ enabled: checked })
-                    }"
+                    "
                   />
                 </div>
               </div>
@@ -368,8 +374,8 @@ onUnmounted(() => {
               <div class="space-y-3">
                 <div class="text-center">
                   <span class="text-2xl font-bold text-primary">{{
-                    selectedDevice.temperature_kelvin
-                  }}K</span>
+                      selectedDevice.temperature_kelvin
+                    }}K</span>
                   <p class="text-xs text-muted-foreground">
                     Color Temperature
                   </p>
@@ -404,8 +410,8 @@ onUnmounted(() => {
               <div class="space-y-3">
                 <div class="text-center">
                   <span class="text-2xl font-bold text-primary">{{
-                    brightnessPercentage
-                  }}%</span>
+                      brightnessPercentage
+                    }}%</span>
                   <p class="text-xs text-muted-foreground">
                     Light Intensity
                   </p>

@@ -4,15 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Release tag (e.g., v1.0.0)'
+        description: "Release tag (e.g., v1.0.0)"
         required: true
         type: string
       create_release:
-        description: 'Create GitHub release'
+        description: "Create GitHub release"
         required: false
         default: true
         type: boolean
-
 
 env:
   CARGO_TERM_COLOR: always
@@ -34,7 +33,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2

@@ -123,31 +123,31 @@
 }
 
 @layer utilities {
-    /* Disable text selection globally */
-    * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-user-drag: none;
-      -khtml-user-drag: none;
-      -moz-user-drag: none;
-      -o-user-drag: none;
-      user-drag: none;
+  /* Disable text selection globally */
+  * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
 
-      /* Disable context menu (right-click) */
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+    /* Disable context menu (right-click) */
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    /* Re-enable selection for input fields and editable content */
-    input,
-    textarea,
-    [contenteditable="true"],
-    .selectable {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-    }
+  /* Re-enable selection for input fields and editable content */
+  input,
+  textarea,
+  [contenteditable="true"],
+  .selectable {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
 }

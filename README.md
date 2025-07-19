@@ -64,18 +64,6 @@
 - **Logitech Litra Beam** - Professional-grade adjustable lighting
 - **Logitech Litra Beam LX** - Premium streaming key light
 
-### 🎨 Lighting Presets
-
-| Preset                   | Temperature | Brightness | Best For                      |
-| ------------------------ | ----------- | ---------- | ----------------------------- |
-| **Cozy Daylight**        | 5200K       | 60%        | Natural video calls           |
-| **Natural Balance**      | 5600K       | 70%        | Accurate color representation |
-| **Cool Blue**            | 6500K       | 75%        | Crisp, energetic streaming    |
-| **Warm Candlelight**     | 3000K       | 40%        | Ambient, comfortable lighting |
-| **Bright Companionship** | 5000K       | 100%       | Maximum illumination          |
-
----
-
 ## 🚀 Installation
 
 ### Quick Install (Recommended)
@@ -142,7 +130,7 @@ Coming soon
 3. **Grant permissions** when prompted (automatic with package install)
 4. **Select your device** from the dropdown menu
 
-### Controls
+### Features
 
 - **🔆 Brightness**: Adjust from 0-100% with smooth sliders
 - **🌡️ Temperature**: Fine-tune color temperature (2700K-6500K)
@@ -150,15 +138,15 @@ Coming soon
 - **🎨 Presets**: One-click professional lighting scenarios
 - **📹 Auto Camera**: Automatically activates when camera is detected
 
-### Keyboard Shortcuts
+### 🎨 Lighting Presets
 
-| Shortcut | Action             |
-| -------- | ------------------ |
-| `Space`  | Toggle power       |
-| `↑/↓`    | Adjust brightness  |
-| `←/→`    | Adjust temperature |
-| `1-5`    | Apply preset 1-5   |
-| `Ctrl+Q` | Quit application   |
+| Preset                   | Temperature | Brightness | Best For                      |
+| ------------------------ | ----------- | ---------- | ----------------------------- |
+| **Cozy Daylight**        | 5200K       | 60%        | Natural video calls           |
+| **Natural Balance**      | 5600K       | 70%        | Accurate color representation |
+| **Cool Blue**            | 6500K       | 75%        | Crisp, energetic streaming    |
+| **Warm Candlelight**     | 3000K       | 40%        | Ambient, comfortable lighting |
+| **Bright Companionship** | 5000K       | 100%       | Maximum illumination          |
 
 ---
 
@@ -217,7 +205,6 @@ pnpm tauri dev
 
 # Build for production
 pnpm tauri build
-
 ```
 
 # Bundles
@@ -236,7 +223,7 @@ litra-control/
 ├── src-tauri/              # Rust backend
 │   ├── src/                # Rust source code
 │   ├── icons/              # Application icons
-│   └── packaging/          # Linux packaging files
+│   └── scripts/          # Linux packaging files
 └── docs/                   # Documentation
 ```
 
@@ -287,9 +274,10 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 <details>
 <summary><strong>Permission denied</strong></summary>
 
-1. Add user to plugdev group: `sudo usermod -a -G plugdev $USER`
-2. Log out and log back in
-3. Check device permissions: `ls -la /dev/hidraw*`
+1. Check the device permissions: `ls -la /dev/hidraw*`
+2. If the device is not in the `plugdev` group, add the user to the group: `sudo usermod -a -G plugdev $USER`
+3. Log out and log back in
+4. Check device permissions: `ls -la /dev/hidraw*`
 
 </details>
 

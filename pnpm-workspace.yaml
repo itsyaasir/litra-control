@@ -1,7 +1,7 @@
 packages:
-  - 'src/**'
+  - "src/**"
 
 onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
+  - "@tailwindcss/oxide"
   - esbuild
   - vue-demi
