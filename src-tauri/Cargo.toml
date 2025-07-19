@@ -1,6 +1,6 @@
 [package]
 name = "litra-control"
-version = "0.1.0"
+version = "0.1.0-alpha.4"
 authors = [ "Yasir Shariff" ]
 edition = "2021"
 description = "A modern Linux desktop application for controlling Logitech Litra devices"

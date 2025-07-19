@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getVersion } from '@tauri-apps/api/app'
 import { disable, enable, isEnabled } from '@tauri-apps/plugin-autostart'
 import { useColorMode, useDebounceFn } from '@vueuse/core'
 import { Camera, ChevronLeft, Monitor, Moon, RefreshCw, Settings, Sun, Video } from 'lucide-vue-next'
@@ -15,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { useCameraMonitor, useDevice } from '@/composables'
-import { APP_VERSION } from '@/lib/utils'
 
 const router = useRouter()
 const cameraMonitor = useCameraMonitor()
@@ -31,6 +31,9 @@ const themeOptions = [
 
 // Autostart state
 const autostartEnabled = ref(false)
+
+// App version
+const appVersion = ref('')
 
 // Local config state
 const localConfig = ref({ ...cameraMonitor.config.value })
@@ -304,6 +307,14 @@ onMounted(async () => {
   }
   catch (error) {
     console.error('Failed to check autostart status:', error)
+  }
+
+  // Get app version
+  try {
+    appVersion.value = await getVersion()
+  }
+  catch (error) {
+    console.error('Failed to get app version:', error)
   }
 
   await refreshDebugInfo()
@@ -679,7 +690,7 @@ onMounted(async () => {
 
         <!-- Version Info -->
         <div class="mt-8 text-center text-sm text-muted-foreground">
-          Litra Control v{{ APP_VERSION }}
+          Litra Control v{{ appVersion }}
         </div>
       </div>
     </main>
