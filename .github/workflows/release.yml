@@ -112,5 +112,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+          body_path: CHANGELOG.md
+
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
