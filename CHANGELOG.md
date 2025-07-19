@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Improved back button design in Settings view with ChevronLeft icon
+- Removed hot-reload configuration in favor of simpler implementation
+- Added toast notifications to inform users to restart app after config changes
 
 ## [0.1-alpha.3] - 2025-07-19
 
