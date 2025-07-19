@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-alpha.3] - 2025-07-19
+
 ### Added
 
-- Autostart functionality with "Start at Login" toggle in settings
+- Added a "Start at Login" toggle in settings to enable/disable automatic startup
 - Uses tauri-plugin-autostart to enable/disable automatic startup
 - Starts minimized when launched at login
+- Added a "Start minimized" toggle in settings to start the application minimized to system tray
 
 ### Fixed
 
