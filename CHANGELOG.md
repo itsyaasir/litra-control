@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Autostart functionality with "Start at Login" toggle in settings
+- Uses tauri-plugin-autostart to enable/disable automatic startup
+- Starts minimized when launched at login
+
+### Fixed
+
+- Fixed Control Strategy variant naming mismatch (PascalCase to camelCase) that caused configuration save errors
+
 ## [0.1.0-alpha.2] - 2025-07-19
 
 ### Added

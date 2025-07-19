@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       create_release:
-        description: "Create GitHub release"
+        description: Create GitHub release
         required: false
         default: true
         type: boolean

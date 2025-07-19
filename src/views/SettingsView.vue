@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { disable, enable, isEnabled } from '@tauri-apps/plugin-autostart'
 import { useColorMode, useDebounceFn } from '@vueuse/core'
 import { ArrowLeft, Camera, Monitor, Moon, RefreshCw, Settings, Sun, Video } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-
 import { toast } from 'vue-sonner'
 import CustomTitlebar from '@/components/CustomTitlebar.vue'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +28,9 @@ const themeOptions = [
   { value: 'dark', label: 'Dark', icon: Moon },
 ]
 
+// Autostart state
+const autostartEnabled = ref(false)
+
 // Local config state
 const localConfig = ref({ ...cameraMonitor.config.value })
 
@@ -41,12 +44,12 @@ const debugInfo = ref({
 // Available strategies
 const strategies = [
   {
-    value: 'AllDevices',
+    value: 'allDevices',
     label: 'All Devices',
     description: 'Control all connected Litra devices',
   },
   {
-    value: 'SelectedDevice',
+    value: 'selectedDevice',
     label: 'Selected Device',
     description: 'Control only a specific device',
   },
@@ -74,23 +77,23 @@ const autoSaveConfig = useDebounceFn(async () => {
 
 // Handle strategy change
 async function handleStrategyChange(value: string) {
-  if (value === 'AllDevices') {
-    localConfig.value.strategy = 'AllDevices'
+  if (value === 'allDevices') {
+    localConfig.value.strategy = 'allDevices'
   }
-  else if (value === 'SelectedDevice') {
+  else if (value === 'selectedDevice') {
     // If no device is selected yet, pick the first available device
-    const currentSerial = (typeof localConfig.value.strategy === 'object' && 'SelectedDevice' in localConfig.value.strategy)
-      ? localConfig.value.strategy.SelectedDevice.serialNumber
+    const currentSerial = (typeof localConfig.value.strategy === 'object' && 'selectedDevice' in localConfig.value.strategy)
+      ? localConfig.value.strategy.selectedDevice.serialNumber
       : availableDevices.value[0]?.serial_number
     const selectedSerial = currentSerial
     if (selectedSerial) {
       localConfig.value.strategy = {
-        SelectedDevice: { serialNumber: selectedSerial },
+        selectedDevice: { serialNumber: selectedSerial },
       }
     }
     else {
-      // If no devices available, keep it as AllDevices for now
-      localConfig.value.strategy = 'AllDevices'
+      // If no devices available, keep it as allDevices for now
+      localConfig.value.strategy = 'allDevices'
       toast.error('No devices available for selection')
       return
     }
@@ -102,13 +105,33 @@ async function handleStrategyChange(value: string) {
 
 // Handle device selection
 async function handleDeviceSelect(serialNumber: any) {
-  // Update the strategy if it's currently SelectedDevice
-  if (typeof localConfig.value.strategy === 'object' && 'SelectedDevice' in localConfig.value.strategy) {
+  // Update the strategy if it's currently selectedDevice
+  if (typeof localConfig.value.strategy === 'object' && 'selectedDevice' in localConfig.value.strategy) {
     localConfig.value.strategy = {
-      SelectedDevice: { serialNumber },
+      selectedDevice: { serialNumber },
     }
   }
   await autoSaveConfig()
+}
+
+// Handle autostart toggle
+async function handleToggleAutostart(checked: boolean) {
+  try {
+    if (checked) {
+      await enable()
+      toast.success('Autostart enabled')
+    }
+    else {
+      await disable()
+      toast.success('Autostart disabled')
+    }
+    autostartEnabled.value = checked
+  }
+  catch (error: any) {
+    toast.error(`Failed to ${checked ? 'enable' : 'disable'} autostart: ${error.message}`)
+    // Check the actual state on error
+    autostartEnabled.value = await isEnabled()
+  }
 }
 
 // Handle camera auto-toggle switch
@@ -267,6 +290,14 @@ onMounted(async () => {
 
   // Sync local config with composable config
   localConfig.value = { ...cameraMonitor.config.value }
+
+  // Check autostart status
+  try {
+    autostartEnabled.value = await isEnabled()
+  }
+  catch (error) {
+    console.error('Failed to check autostart status:', error)
+  }
 
   await refreshDebugInfo()
   isLoadingConfig.value = false
@@ -440,6 +471,22 @@ onMounted(async () => {
                     </button>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div class="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div>
+                    <Label class="text-base font-medium">Start at Login</Label>
+                    <p class="text-sm text-muted-foreground mt-1">
+                      Automatically start Litra Control when you log in
+                    </p>
+                  </div>
+                  <Switch
+                    class="cursor-pointer"
+                    :model-value="autostartEnabled"
+                    @update:model-value="handleToggleAutostart"
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -496,14 +543,14 @@ onMounted(async () => {
               </CardHeader>
               <CardContent class="space-y-4">
                 <Select
-                  :model-value="typeof localConfig.strategy === 'string' ? localConfig.strategy : 'SelectedDevice'"
+                  :model-value="typeof localConfig.strategy === 'string' ? localConfig.strategy : 'selectedDevice'"
                   class="cursor-pointer"
                   @update:model-value="(value: any) => handleStrategyChange(value)"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select strategy">
                       {{
-                        strategies.find(s => s.value === (typeof localConfig.strategy === 'string' ? localConfig.strategy : 'SelectedDevice'))?.label || 'Select strategy'
+                        strategies.find(s => s.value === (typeof localConfig.strategy === 'string' ? localConfig.strategy : 'selectedDevice'))?.label || 'Select strategy'
                       }}
                     </SelectValue>
                   </SelectTrigger>
@@ -527,12 +574,12 @@ onMounted(async () => {
 
                 <!-- Selected Device Configuration -->
                 <div
-                  v-if="typeof localConfig.strategy === 'object' && 'SelectedDevice' in localConfig.strategy"
+                  v-if="typeof localConfig.strategy === 'object' && 'selectedDevice' in localConfig.strategy"
                   class="space-y-3"
                 >
                   <Label>Select Device</Label>
                   <Select
-                    :model-value="(typeof localConfig.strategy === 'object' && 'SelectedDevice' in localConfig.strategy) ? localConfig.strategy.SelectedDevice.serialNumber : ''"
+                    :model-value="(typeof localConfig.strategy === 'object' && 'selectedDevice' in localConfig.strategy) ? localConfig.strategy.selectedDevice.serialNumber : ''"
                     class="cursor-pointer"
                     @update:model-value="(value: any) => handleDeviceSelect(value)"
                   >

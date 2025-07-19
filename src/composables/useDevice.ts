@@ -4,7 +4,7 @@
 /// with automatic error handling and state management.
 
 import type { DeviceOperation } from '../types'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useDeviceStore } from '../stores'
 
 /**
@@ -147,12 +147,6 @@ export function useDevice(serialNumber?: string) {
     await deviceStore.setBrightnessInLumen(serial, lumens)
   }
 
-  // Event handler for camera auto-toggle events
-  const handleCameraDeviceChange = () => {
-    // Refresh devices to get updated power states
-    refreshDevices()
-  }
-
   // Lifecycle
   onMounted(async () => {
     // Initial device discovery
@@ -162,16 +156,6 @@ export function useDevice(serialNumber?: string) {
     if (!deviceStore.selectedDeviceSerial && deviceStore.devices.length > 0) {
       selectFirstDevice()
     }
-
-    // Listen for camera auto-toggle events to refresh device state
-    window.addEventListener('camera-device-activated', handleCameraDeviceChange)
-    window.addEventListener('camera-device-deactivated', handleCameraDeviceChange)
-  })
-
-  onUnmounted(() => {
-    // Cleanup event listeners
-    window.removeEventListener('camera-device-activated', handleCameraDeviceChange)
-    window.removeEventListener('camera-device-deactivated', handleCameraDeviceChange)
   })
 
   return {

@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/core'
-import { listen } from '@tauri-apps/api/event'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 export interface CameraMonitorState {
   isMonitoring: boolean
@@ -11,7 +10,7 @@ export interface CameraMonitorState {
 
 export interface AutoToggleConfig {
   enabled: boolean
-  strategy: 'AllDevices' | { SelectedDevice: { serialNumber: string } }
+  strategy: 'allDevices' | { selectedDevice: { serialNumber: string } }
   debounceMs: number
 }
 
@@ -27,7 +26,7 @@ export function useCameraMonitor() {
   // Config state
   const config = ref<AutoToggleConfig>({
     enabled: false,
-    strategy: 'AllDevices',
+    strategy: 'allDevices',
     debounceMs: 3000,
   })
 
@@ -118,51 +117,8 @@ export function useCameraMonitor() {
   const resetConfig = () => {
     config.value = {
       enabled: false,
-      strategy: 'AllDevices',
+      strategy: 'allDevices',
       debounceMs: 3000,
-    }
-  }
-
-  // Event listeners
-  let unlistenNotifications: (() => void) | null = null
-
-  const setupEventListeners = async () => {
-    try {
-      // Listen for auto-toggle notifications
-      unlistenNotifications = await listen<any>('auto-toggle-notification', (event) => {
-        const notification = event.payload
-
-        // Update state based on notification
-        if (notification.notification_type === 'CameraDetected') {
-          refreshStatus()
-        }
-        else if (notification.notification_type === 'CameraLost') {
-          refreshStatus()
-        }
-        else if (notification.notification_type === 'DeviceActivated') {
-          refreshStatus()
-          // Emit event to trigger device state refresh
-          window.dispatchEvent(new CustomEvent('camera-device-activated'))
-        }
-        else if (notification.notification_type === 'DeviceDeactivated') {
-          refreshStatus()
-          // Emit event to trigger device state refresh
-          window.dispatchEvent(new CustomEvent('camera-device-deactivated'))
-        }
-        else if (notification.notification_type === 'Error') {
-          console.error('[Camera Monitor] Notification error:', notification.message)
-        }
-      })
-    }
-    catch (error) {
-      console.error('[Camera Monitor] Failed to setup event listeners:', error)
-    }
-  }
-
-  const cleanup = () => {
-    if (unlistenNotifications) {
-      unlistenNotifications()
-      unlistenNotifications = null
     }
   }
 
@@ -180,7 +136,6 @@ export function useCameraMonitor() {
 
   // Lifecycle
   onMounted(async () => {
-    await setupEventListeners()
     await loadConfig()
     await refreshStatus()
 
@@ -188,10 +143,6 @@ export function useCameraMonitor() {
     if (config.value.enabled && !state.value.isMonitoring) {
       await startMonitoring()
     }
-  })
-
-  onUnmounted(() => {
-    cleanup()
   })
 
   return {

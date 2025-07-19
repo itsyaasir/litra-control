@@ -38,4 +38,5 @@ toml = "0.9" # For config tests
 uuid = { version = "1.0", features = ["v4"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"
 tauri-plugin-cli = "2"
