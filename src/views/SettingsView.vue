@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { disable, enable, isEnabled } from '@tauri-apps/plugin-autostart'
 import { useColorMode, useDebounceFn } from '@vueuse/core'
-import { ArrowLeft, Camera, Monitor, Moon, RefreshCw, Settings, Sun, Video } from 'lucide-vue-next'
+import { Camera, ChevronLeft, Monitor, Moon, RefreshCw, Settings, Sun, Video } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { useCameraMonitor, useDevice } from '@/composables'
+import { APP_VERSION } from '@/lib/utils'
 
 const router = useRouter()
 const cameraMonitor = useCameraMonitor()
@@ -68,7 +69,9 @@ const autoSaveConfig = useDebounceFn(async () => {
 
   try {
     await cameraMonitor.updateConfig(localConfig.value)
-    toast.success('Config updated')
+    toast.success('Config updated. Please restart the app for changes to take effect.', {
+      duration: 5000,
+    })
   }
   catch (error) {
     toast.error(`Failed to auto-save config: ${error}`)
@@ -142,11 +145,15 @@ async function handleToggleAutoToggle(checked: boolean) {
 
     if (checked) {
       await cameraMonitor.startMonitoring()
-      toast.success('Camera auto-toggle enabled and monitoring started')
+      toast.success('Camera auto-toggle enabled and monitoring started. Restart the app if needed.', {
+        duration: 5000,
+      })
     }
     else {
       await cameraMonitor.stopMonitoring()
-      toast.success('Camera auto-toggle disabled and monitoring stopped')
+      toast.success('Camera auto-toggle disabled and monitoring stopped. Restart the app if needed.', {
+        duration: 5000,
+      })
     }
   }
   catch (error: any) {
@@ -314,11 +321,11 @@ onMounted(async () => {
           <div class="flex items-center gap-4">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
+              class="rounded-full"
               @click="router.back()"
             >
-              <ArrowLeft class="w-4 h-4 mr-2" />
-              Back
+              <ChevronLeft class="w-5 h-5" />
             </Button>
 
             <div class="flex items-center gap-3">
@@ -458,8 +465,8 @@ onMounted(async () => {
                       class="relative flex flex-col items-center gap-2 p-3 rounded-lg border transition-all cursor-pointer"
                       :class="
                         colorMode === theme.value
-                        ? 'bg-primary/10 border-primary text-primary'
-                        : 'bg-muted/30 border-border hover:bg-muted/50 hover:border-border/80'
+                          ? 'bg-primary/10 border-primary text-primary'
+                          : 'bg-muted/30 border-border hover:bg-muted/50 hover:border-border/80'
                       "
                       @click="colorMode = theme.value as any"
                     >
@@ -505,8 +512,7 @@ onMounted(async () => {
               <CardContent class="space-y-4">
                 <div class="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                   <div>
-                    <Label class="text-base font-medium"
-                    >Enable Camera Auto-Toggle</Label>
+                    <Label class="text-base font-medium">Enable Camera Auto-Toggle</Label>
                     <p class="text-sm text-muted-foreground mt-1">
                       Turn on lights when camera is detected, turn off when no
                       camera activity
@@ -669,6 +675,11 @@ onMounted(async () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <!-- Version Info -->
+        <div class="mt-8 text-center text-sm text-muted-foreground">
+          Litra Control v{{ APP_VERSION }}
         </div>
       </div>
     </main>

@@ -50,9 +50,7 @@ impl AppState {
             DeviceManager::new().expect("Failed to initialize device manager"),
         ));
 
-        let (config_manager, _) = ConfigManager::new()
-            .map_err(|e| format!("Failed to initialize config manager: {e}"))
-            .expect("Failed to initialize config manager");
+        let config_manager = ConfigManager::new().expect("Failed to initialize config manager");
 
         Self {
             device_manager: device_manager.clone(),

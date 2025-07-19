@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0-alpha.3] - 2025-07-19
+### Added
+- App version display in Settings page
+- Settings access button in no-devices overlay, allowing users to configure app when no Litra devices are connected
+
+### Changed
+- Improved back button design in Settings view with ChevronLeft icon
+
+## [0.1-alpha.3] - 2025-07-19
 
 ### Added
 
@@ -20,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed Control Strategy variant naming mismatch (PascalCase to camelCase) that caused configuration save errors
 
-## [0.1.0-alpha.2] - 2025-07-19
+## [0.1-alpha.2] - 2025-07-19
 
 ### Added
 

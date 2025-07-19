@@ -182,8 +182,7 @@ onUnmounted(() => {
         <div class="flex items-center gap-3">
           <!-- Device Selector -->
           <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground font-medium"
-            >Device:</span>
+            <span class="text-sm text-muted-foreground font-medium">Device:</span>
             <Select
               :model-value="selectedDevice?.serial_number || ''"
               @update:model-value="handleDeviceSelect"
@@ -210,8 +209,8 @@ onUnmounted(() => {
           <div class="flex items-center gap-2 text-sm">
             <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span class="text-muted-foreground">{{
-                device.deviceStats.value.connected
-              }} connected</span>
+              device.deviceStats.value.connected
+            }} connected</span>
           </div>
         </div>
 
@@ -374,8 +373,8 @@ onUnmounted(() => {
               <div class="space-y-3">
                 <div class="text-center">
                   <span class="text-2xl font-bold text-primary">{{
-                      selectedDevice.temperature_kelvin
-                    }}K</span>
+                    selectedDevice.temperature_kelvin
+                  }}K</span>
                   <p class="text-xs text-muted-foreground">
                     Color Temperature
                   </p>
@@ -410,8 +409,8 @@ onUnmounted(() => {
               <div class="space-y-3">
                 <div class="text-center">
                   <span class="text-2xl font-bold text-primary">{{
-                      brightnessPercentage
-                    }}%</span>
+                    brightnessPercentage
+                  }}%</span>
                   <p class="text-xs text-muted-foreground">
                     Light Intensity
                   </p>
@@ -541,12 +540,21 @@ onUnmounted(() => {
             refreshing.
           </p>
         </div>
-        <Button
-          class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-          @click="handleRefreshDevices"
-        >
-          Refresh Devices
-        </Button>
+        <div class="flex gap-3 justify-center">
+          <Button
+            class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+            @click="handleRefreshDevices"
+          >
+            Refresh Devices
+          </Button>
+          <Button
+            variant="outline"
+            @click="router.push('/settings')"
+          >
+            <Settings class="w-4 h-4 mr-2" />
+            Settings
+          </Button>
+        </div>
       </div>
     </div>
   </div>

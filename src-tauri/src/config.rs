@@ -5,11 +5,9 @@
 
 use chrono::{DateTime, Utc};
 use confy;
-use notify::{RecursiveMode, Watcher};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
-use tokio::sync::mpsc;
 
 /// Configuration file name
 pub const CONFIG_FILE_NAME: &str = "config";
@@ -74,79 +72,15 @@ pub struct DeviceStates {
 /// Configuration manager with hot-reload support
 pub struct ConfigManager {
     config: Arc<RwLock<LitraConfig>>,
-    _watcher: Option<notify::RecommendedWatcher>,
 }
 
 impl ConfigManager {
     /// Create a new configuration manager
-    pub fn new() -> Result<(Self, Option<mpsc::Receiver<LitraConfig>>), Box<dyn std::error::Error>>
-    {
+    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
         // Load initial configuration
         let config = Arc::new(RwLock::new(confy::load(APP_NAME, Some(CONFIG_FILE_NAME))?));
 
-        // Try to setup file watcher for hot-reload
-        let config_clone = Arc::clone(&config);
-        let (config_tx, config_rx) = mpsc::channel(100);
-
-        let watcher = match Self::setup_file_watcher(config_clone, config_tx) {
-            Ok(w) => Some(w),
-            Err(e) => {
-                eprintln!("Warning: Could not setup config file watcher: {e}");
-                None
-            }
-        };
-
-        let receiver = if watcher.is_some() {
-            Some(config_rx)
-        } else {
-            None
-        };
-
-        Ok((
-            Self {
-                config,
-                _watcher: watcher,
-            },
-            receiver,
-        ))
-    }
-
-    /// Setup file watcher for hot-reload
-    fn setup_file_watcher(
-        config: Arc<RwLock<LitraConfig>>,
-        config_tx: mpsc::Sender<LitraConfig>,
-    ) -> Result<notify::RecommendedWatcher, Box<dyn std::error::Error>> {
-        let mut watcher =
-            notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-                match res {
-                    Ok(_event) => {
-                        // Reload configuration when file changes
-                        if let Ok(new_config) =
-                            confy::load::<LitraConfig>(APP_NAME, Some(CONFIG_FILE_NAME))
-                        {
-                            // Update in-memory config
-                            if let Ok(mut config_lock) = config.write() {
-                                *config_lock = new_config.clone();
-                            }
-
-                            // Send update notification
-                            let _ = config_tx.try_send(new_config);
-                        }
-                    }
-                    Err(e) => {
-                        eprintln!("Config file watcher error: {e}");
-                    }
-                }
-            })?;
-
-        // Watch the config directory
-        if let Some(config_dir) =
-            confy::get_configuration_file_path(APP_NAME, Some(CONFIG_FILE_NAME))?.parent()
-        {
-            watcher.watch(config_dir, RecursiveMode::NonRecursive)?;
-        }
-
-        Ok(watcher)
+        Ok(Self { config })
     }
 
     /// Get the current configuration
